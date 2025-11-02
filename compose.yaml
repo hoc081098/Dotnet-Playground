@@ -1,0 +1,7 @@
+﻿services:
+  csharpplayground:
+    image: csharpplayground
+    build:
+      context: .
+      dockerfile: Dockerfile
+
