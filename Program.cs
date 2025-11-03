@@ -51,6 +51,7 @@ Console.WriteLine($"c1: {c1}, c2: {c2}, c3: {c3}");
 
 // Similar to Kotlin's "-".repeat(30)
 Console.WriteLine(new string('-', 30));
-ListsPlayground.Run();
+ParentChildPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
+ListsPlayground.Run();
