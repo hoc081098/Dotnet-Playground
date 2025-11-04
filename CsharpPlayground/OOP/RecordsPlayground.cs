@@ -18,6 +18,13 @@ public record User(
     ImmutableListWithValueSemantics<string> Nicknames
 );
 
+public record RecordWithInitProperties
+{
+    public required int Id { get; init; }
+    public required string Name { get; init; }
+    public string? Email { get; set; }
+}
+
 public static class RecordsPlayground
 {
     public static void Run()
@@ -58,8 +65,8 @@ public static class RecordsPlayground
         Console.WriteLine($"user2: {user2}");
 
         // Compare user1 and user2
-        Console.WriteLine($"user1 == user2: {user1 == user2}"); // compare contents
-        Console.WriteLine($"user1.Equals(user2): {user1.Equals(user2)}"); // compare contents
+        Console.WriteLine($"user1 == user2: {user1 == user2}"); // compare contents (static operator ==)
+        Console.WriteLine($"user1.Equals(user2): {user1.Equals(user2)}"); // compare contents (instance method Equals)
 
         // Compare hashcode
         Console.WriteLine($"user1.GetHashCode(): {user1.GetHashCode()}");
@@ -97,5 +104,26 @@ public static class RecordsPlayground
         var user3 = user2 with { Age = 50, Username = "new-name" };
         Console.WriteLine($"user3 (copied from user2 with modifications): {user3}");
         Console.WriteLine($"user2 and user3 are same instance: {ReferenceEquals(user2, user3)}");
+
+        Console.WriteLine(new string('-', 80));
+        // ------------------------------- Init-only properties in records -------------------------------
+        var recordWithInitProperties1 = new RecordWithInitProperties
+        {
+            Id = 1998,
+            Name = "hoc081098",
+            Email = "hoc081098@gmail.com"
+        };
+        var recordWithInitProperties2 = new RecordWithInitProperties
+        {
+            Id = 1998,
+            Name = "hoc081098"
+        };
+        Console.WriteLine($"recordWithInitProperties1: {recordWithInitProperties1}");
+        Console.WriteLine($"recordWithInitProperties2: {recordWithInitProperties2}");
+        Console.WriteLine($"recordWithInitProperties1 == recordWithInitProperties2:" +
+                          $" {recordWithInitProperties1 == recordWithInitProperties2}"); // False because Email is different (null vs "hoc081098@gmail.com")
+        recordWithInitProperties2.Email = "hoc081098@gmail.com";
+        Console.WriteLine($"After setting Email, recordWithInitProperties1 == recordWithInitProperties2:" +
+                          $" {recordWithInitProperties1 == recordWithInitProperties2}"); // True because all properties are now the same
     }
 }
