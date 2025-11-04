@@ -11,7 +11,7 @@ public static class SetsPlayground
         // ISet<int> is similar to Kotlin MutableSet<Int>
         // HashSet<int> is similar to Kotlin HashSet<Int>
         var hashSet = new HashSet<int>([1, 2, 3, 3, 2, 1]);
-        Console.WriteLine("ReadOnlySet: " + string.Join(", ", hashSet) + ", count = " + hashSet.Count);
+        Console.WriteLine("HashSet: " + string.Join(", ", hashSet) + ", count = " + hashSet.Count);
 
         IReadOnlySet<int> readOnlySet = new ReadOnlySet<int>(hashSet); // Wrap HashSet in ReadOnlySet
         foreach (var number in readOnlySet)
@@ -21,6 +21,7 @@ public static class SetsPlayground
 
         hashSet.Add(100);
         hashSet.Add(200);
+        Console.WriteLine("HashSet after Add: " + string.Join(", ", hashSet));
         Console.WriteLine("After additions, ReadOnlySet: " + string.Join(", ", readOnlySet) + ", count = " +
                           readOnlySet.Count);
 
@@ -57,6 +58,8 @@ public static class SetsPlayground
                           immutableSet.Equals(immutableSet1)); // reference comparison
         Console.WriteLine("immutableSet.SetEquals(immutableSet1): " +
                           immutableSet.SetEquals(immutableSet1)); // content comparison
+        var removedSet = newSet.Remove(2);
+        Console.WriteLine("Removed 2 → " + string.Join(", ", removedSet));
 
         // Set operations
         var a = ImmutableHashSet.Create(1, 2, 3);
@@ -71,5 +74,9 @@ public static class SetsPlayground
         Console.WriteLine("A ∩ B: " + string.Join(", ", intersection));
         Console.WriteLine("A - B: " + string.Join(", ", except));
         Console.WriteLine("(A - B) ∪ (B - A): " + string.Join(", ", symmetricExcept));
+        var c = ImmutableHashSet.Create(1,2, 3);
+        var d = ImmutableHashSet.Create(2);
+        Console.WriteLine("C ⊆ D: " + c.IsSubsetOf(d)); // C is subset of D === (D.....(C)....) => false
+        Console.WriteLine("C ⊇ D: " + c.IsSupersetOf(d)); // C is superset of D === (C.....(D)....) => true
     }
 }
