@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 
 namespace CsharpPlayground.Collections;
@@ -7,6 +8,8 @@ public static class ListsPlayground
     public static void Run()
     {
         // IReadOnlyList<int> is similar to Kotlin List<Int>
+        // List<int> is similar to Kotlin ArrayList<Int>
+        // LinkedList<int> is similar to Kotlin LinkedList<Int> (doubly linked list)
         IReadOnlyList<int> readonlyNumbers = [1, 2, 3, 4, 5];
 
         // Iterate through the read-only list
@@ -57,6 +60,21 @@ public static class ListsPlayground
         linkedList.AddLast(2);
         linkedList.AddLast(3);
         Console.WriteLine("LinkedList contents: " + string.Join(", ", linkedList));
+
+        // ImmutableList<int>
+        var immutableList = ImmutableList.Create(1, 2, 3);
+        var newList = immutableList.Add(4); // instantiate a new list, original remains
+        Console.WriteLine("ImmutableList: " + string.Join(", ", immutableList) + ", count = " + immutableList.Count);
+        Console.WriteLine("New ImmutableList: " + string.Join(", ", newList) + ", count = " + newList.Count);
+        // ==, Equals
+        var immutableList1 = ImmutableList.Create(1, 2, 3);
+        var immutableList2 = ImmutableList.Create(1, 2, 3);
+        Console.WriteLine("immutableList2 == immutableList1: " +
+                          (immutableList2 == immutableList1)); // reference comparison
+        Console.WriteLine("immutableList2.Equals(immutableList1): " +
+                          immutableList2.Equals(immutableList1)); // reference comparison
+        Console.WriteLine("immutableList2.SequenceEqual(immutableList1): " +
+                          immutableList2.SequenceEqual(immutableList1)); // content comparison
     }
 }
 
