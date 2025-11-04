@@ -9,6 +9,7 @@ public enum UserRole
     User = 100
 }
 
+// Record equality: compares all positional properties in order (Id, Username, Email, Age, Role, Nicknames)
 public record User(
     Guid Id,
     string Username,
