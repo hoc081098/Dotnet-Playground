@@ -5,7 +5,8 @@ public class Parent
     private string _privateName = "hello";
     internal string _internalName = "hello";
 
-    protected string ProtectedName = "PP";
+    private protected string _privateProtectedName = "PP";
+    protected internal string _internalProtectedName = "PP";
     public string PublicName = "hello";
 
     public required Guid Id { get; init; }

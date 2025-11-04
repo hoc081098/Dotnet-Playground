@@ -1,0 +1,137 @@
+root = true
+
+# Applies to C# files
+[*.cs]
+
+############################
+# Naming Styles (reusable) #
+############################
+
+# PascalCase
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+# camelCase
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+# _camelCase (leading underscore + camelCase)
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+
+# s_camelCase (leading s_ + camelCase) for private static fields
+dotnet_naming_style.s_camel_case.capitalization = camel_case
+dotnet_naming_style.s_camel_case.required_prefix = s_
+
+# TPascal for generic type parameters (e.g., TKey, TValue)
+dotnet_naming_style.t_prefix_pascal.capitalization = pascal_case
+dotnet_naming_style.t_prefix_pascal.required_prefix = T
+
+# Async suffix
+dotnet_naming_style.ends_with_async.capitalization = pascal_case
+dotnet_naming_style.ends_with_async.required_suffix = Async
+
+# Interface prefix I
+dotnet_naming_style.starts_with_i_pascal.capitalization = pascal_case
+dotnet_naming_style.starts_with_i_pascal.required_prefix = I
+
+
+#############################
+# Symbol Groups (what to hit)
+#############################
+
+# All public members (methods, properties, fields, events, etc.)
+dotnet_naming_symbols.public_members.applicable_accessibilities = public, protected, protected_internal
+dotnet_naming_symbols.public_members.applicable_kinds = method, property, field, event
+# (Fields are included here but const/static readonly are targeted explicitly below.)
+
+# Properties (any accessibility)
+dotnet_naming_symbols.all_properties.applicable_kinds = property
+
+# Methods (any accessibility)
+dotnet_naming_symbols.all_methods.applicable_kinds = method
+
+# Async methods (must have the async modifier)
+dotnet_naming_symbols.async_methods.applicable_kinds = method
+dotnet_naming_symbols.async_methods.required_modifiers = async
+
+# Interfaces
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+
+# Generic type parameters
+dotnet_naming_symbols.type_parameters.applicable_kinds = type_parameter
+
+# Private/internal instance fields (non-public, non-static)
+dotnet_naming_symbols.nonpublic_instance_fields.applicable_accessibilities = private, internal, protected, protected_internal, private_protected
+dotnet_naming_symbols.nonpublic_instance_fields.applicable_kinds = field
+# Note: no way to say "exclude static" here; we rely on a more specific static rule below to override.
+
+# Private/internal static fields
+dotnet_naming_symbols.nonpublic_static_fields.applicable_accessibilities = private, internal, protected, protected_internal, private_protected
+dotnet_naming_symbols.nonpublic_static_fields.applicable_kinds = field
+dotnet_naming_symbols.nonpublic_static_fields.required_modifiers = static
+
+# Constant fields
+dotnet_naming_symbols.const_fields.applicable_kinds = field
+dotnet_naming_symbols.const_fields.required_modifiers = const
+
+# Static readonly fields
+dotnet_naming_symbols.static_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.static_readonly_fields.required_modifiers = static, readonly
+
+
+##########################
+# Naming Rules (bindings)
+##########################
+
+# Public members → PascalCase
+dotnet_naming_rule.public_members_should_be_pascal.symbols = public_members
+dotnet_naming_rule.public_members_should_be_pascal.style = pascal_case
+dotnet_naming_rule.public_members_should_be_pascal.severity = error
+
+# Properties → PascalCase
+dotnet_naming_rule.properties_should_be_pascal.symbols = all_properties
+dotnet_naming_rule.properties_should_be_pascal.style = pascal_case
+dotnet_naming_rule.properties_should_be_pascal.severity = error
+
+# Methods → PascalCase
+dotnet_naming_rule.methods_should_be_pascal.symbols = all_methods
+dotnet_naming_rule.methods_should_be_pascal.style = pascal_case
+dotnet_naming_rule.methods_should_be_pascal.severity = error
+
+# Async methods → end with Async
+dotnet_naming_rule.async_methods_should_end_with_async.symbols = async_methods
+dotnet_naming_rule.async_methods_should_end_with_async.style = ends_with_async
+dotnet_naming_rule.async_methods_should_end_with_async.severity = error
+
+# Interfaces → start with I + PascalCase
+dotnet_naming_rule.interfaces_should_start_with_i.symbols = interfaces
+dotnet_naming_rule.interfaces_should_start_with_i.style = starts_with_i_pascal
+dotnet_naming_rule.interfaces_should_start_with_i.severity = error
+
+# Generic type parameters → T + PascalCase
+dotnet_naming_rule.type_parameters_should_start_with_t.symbols = type_parameters
+dotnet_naming_rule.type_parameters_should_start_with_t.style = t_prefix_pascal
+dotnet_naming_rule.type_parameters_should_start_with_t.severity = error
+
+# Private/internal instance fields → _camelCase
+dotnet_naming_rule.nonpublic_instance_fields_should_be__camel.symbols = nonpublic_instance_fields
+dotnet_naming_rule.nonpublic_instance_fields_should_be__camel.style = underscore_camel_case
+dotnet_naming_rule.nonpublic_instance_fields_should_be__camel.severity = error
+
+# Const fields → PascalCase
+dotnet_naming_rule.const_fields_should_be_pascal.symbols = const_fields
+dotnet_naming_rule.const_fields_should_be_pascal.style = pascal_case
+dotnet_naming_rule.const_fields_should_be_pascal.severity = error
+
+# Static readonly fields → PascalCase
+dotnet_naming_rule.static_readonly_fields_should_be_pascal.symbols = static_readonly_fields
+dotnet_naming_rule.static_readonly_fields_should_be_pascal.style = pascal_case
+dotnet_naming_rule.static_readonly_fields_should_be_pascal.severity = error
+
+
+#########################################
+# Notes / Limitations (Roslyn analyzers)
+#########################################
+# - You cannot target only "attribute classes" for the *Attribute suffix rule* via naming rules.
+#   (No symbol filter for “inherits from System.Attribute”. Enforce via code review or custom analyzer.)
+# - Thread-static (t_) cannot be auto-enforced because rules can’t filter by [ThreadStatic] attribute.
+# - If you prefer the ASP.NET Core house style (no s_), delete the static-field rule above and rely on _ only.
