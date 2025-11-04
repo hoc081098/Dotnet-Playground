@@ -93,6 +93,7 @@ public static class RecordsPlayground
             $"Deconstructed user2: Id={id}, Username={username}, Email={email}, Age={age}, Role={roleValue}, Nicknames=[{string.Join(", ", nicknames)}]\n");
 
         // Copy with `with` expression
+        // user2.Age = 100; // Cannot change Age since records are immutable by default
         var user3 = user2 with { Age = 50, Username = "new-name" };
         Console.WriteLine($"user3 (copied from user2 with modifications): {user3}");
         Console.WriteLine($"user2 and user3 are same instance: {ReferenceEquals(user2, user3)}");
