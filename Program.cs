@@ -55,3 +55,6 @@ ParentChildPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
 ListsPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+SetsPlayground.Run();
