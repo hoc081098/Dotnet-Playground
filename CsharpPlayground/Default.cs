@@ -1,5 +1,7 @@
 // ReSharper disable PreferConcreteValueOverDefault
 
+using CsharpPlayground.OOP;
+
 namespace CsharpPlayground;
 
 internal static class StringExtensions
@@ -24,9 +26,9 @@ public static class Default
 
     private enum SomeEnum
     {
-        First,
-        Second,
         None = 0, // default(SomeEnum) == 0
+        First = 1,
+        Second = 2,
     }
 
     public static void Run()
@@ -48,5 +50,7 @@ public static class Default
         Console.WriteLine("Default of SomeClass: " + default(SomeClass).AsPrintable());
         Console.WriteLine("Default of SomeStruct: " + default(SomeStruct).AsPrintable());
         Console.WriteLine("Default of SomeEnum: " + default(SomeEnum).AsPrintable());
+        Console.WriteLine("Default of SomeEnum (actual): " +
+                          EnumExtensions.FindByValueOrThrow<SomeEnum>((int)default(SomeEnum)).AsPrintable());
     }
 }
