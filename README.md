@@ -220,9 +220,9 @@ dotnet test
 ## Resources
 
 ### Official Documentation
-- [Microsoft C# Documentation](https://docs.microsoft.com/en-us/dotnet/csharp/)
-- [ASP.NET Core Documentation](https://docs.microsoft.com/en-us/aspnet/core/)
-- [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
+- [Microsoft C# Documentation](https://learn.microsoft.com/en-us/dotnet/csharp/)
+- [ASP.NET Core Documentation](https://learn.microsoft.com/en-us/aspnet/core/)
+- [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)
 
 ### For Kotlin/Java Developers
 - [C# for Java Developers](https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/)

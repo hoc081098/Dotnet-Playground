@@ -355,7 +355,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ## Additional Resources
 
-- [Microsoft C# Guide](https://docs.microsoft.com/en-us/dotnet/csharp/)
+- [Microsoft C# Guide](https://learn.microsoft.com/en-us/dotnet/csharp/)
 - [Kotlin to C# Playground](https://github.com/hoc081098/CsharpPlayground) (this repository)
-- [ASP.NET Core Documentation](https://docs.microsoft.com/en-us/aspnet/core/)
-- [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
+- [ASP.NET Core Documentation](https://learn.microsoft.com/en-us/aspnet/core/)
+- [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)

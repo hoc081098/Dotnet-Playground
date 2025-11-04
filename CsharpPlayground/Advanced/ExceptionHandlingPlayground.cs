@@ -110,11 +110,12 @@ public static class ExceptionHandlingPlayground
         Console.WriteLine("\n=== Async Exception Handling ===");
         try
         {
-            AsyncMethodWithException().Wait(); // Wait() for demo purposes
+            // Using GetAwaiter().GetResult() for demonstration (better than Wait() for avoiding deadlocks)
+            AsyncMethodWithException().GetAwaiter().GetResult();
         }
-        catch (AggregateException ex)
+        catch (InvalidOperationException ex)
         {
-            Console.WriteLine($"Caught AggregateException: {ex.InnerException?.Message}");
+            Console.WriteLine($"Caught InvalidOperationException: {ex.Message}");
         }
     }
 
