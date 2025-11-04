@@ -14,6 +14,8 @@ internal class test
     private static int _staticValue; // ✅ ok
 
     public static readonly int Default = 0; // ✅ ok
+    private protected int _a = 0;
+    protected internal int _b = 1;
 }
 #pragma warning restore CS0414 // Field is assigned but its value is never used
 #pragma warning restore CS0169 // Field is never used

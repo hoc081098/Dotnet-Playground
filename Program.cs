@@ -58,3 +58,6 @@ ListsPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
 SetsPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+RecordsPlayground.Run();
