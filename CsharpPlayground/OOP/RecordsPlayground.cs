@@ -25,6 +25,10 @@ public record RecordWithInitProperties
     public string? Email { get; set; }
 }
 
+public record struct RecordStructMutable(int Id, string Name);
+
+public readonly record struct RecordStructReadonly(int Id, string Name);
+
 public static class RecordsPlayground
 {
     public static void Run()
@@ -125,5 +129,35 @@ public static class RecordsPlayground
         recordWithInitProperties2.Email = "hoc081098@gmail.com";
         Console.WriteLine($"After setting Email, recordWithInitProperties1 == recordWithInitProperties2:" +
                           $" {recordWithInitProperties1 == recordWithInitProperties2}"); // True because all properties are now the same
+
+        Console.WriteLine(new string('-', 80));
+        // ------------------------------- Struct records -------------------------------
+        var recordStructMutable1 = new RecordStructMutable(Id: 1, Name: "Record Struct Mutable");
+        var recordStructMutable2 = new RecordStructMutable(Id: 1, Name: "Record Struct Mutable");
+        Console.WriteLine($"recordStructMutable1: {recordStructMutable1}");
+        Console.WriteLine($"recordStructMutable2: {recordStructMutable2}");
+        Console.WriteLine(
+            $"recordStructMutable1 == recordStructMutable2: {recordStructMutable1 == recordStructMutable2}"); // True
+
+        Console.WriteLine($"Before modifying recordStructMutable2: {recordStructMutable2}");
+        DemoRecordStructMutable(recordStructMutable2);
+        Console.WriteLine(
+            $"After modifying recordStructMutable2: {recordStructMutable2}"); // do not change because struct is passed by value
+
+
+        var recordStructReadonly = new RecordStructReadonly(10, "hoc");
+        Console.WriteLine($"recordStructReadonly: {recordStructReadonly}");
+        DemoRecordStructReadonly(recordStructReadonly);
+        // recordStructReadonly.Id = 10; // Error: cannot modify because it's readonly
+    }
+
+    private static void DemoRecordStructMutable(RecordStructMutable r)
+    {
+        r.Name += "new name";
+    }
+
+    private static void DemoRecordStructReadonly(RecordStructReadonly r)
+    {
+        // r.Name += "new name"; // Error: cannot modify because it's readonly
     }
 }
