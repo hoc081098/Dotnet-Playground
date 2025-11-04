@@ -9,12 +9,6 @@ public enum UserRole
     User = 100
 }
 
-public static class EnumExtensions
-{
-    public static T FindOrThrow<T>(Func<T, bool> predicate) where T : struct, Enum
-        => Enum.GetValues<T>().First(predicate);
-}
-
 public record User(
     Guid Id,
     string Username,
@@ -32,14 +26,14 @@ public static class RecordsPlayground
         //     ? (UserRole)0
         //     : throw new ArgumentOutOfRangeException(nameof(role), "Invalid role value");
 
-        var role = EnumExtensions.FindOrThrow<UserRole>(e => (int)e == 100);
+        var role = EnumExtensions.FindByValueOrThrow<UserRole>(100);
         var description = role switch
         {
             UserRole.Admin => "Administrator with full access",
             UserRole.User => "Regular user with limited access",
             _ => throw new ArgumentOutOfRangeException()
         };
-        Console.WriteLine($"Role: {role}, Description: '{description}'");
+        Console.WriteLine($"Role: {role}, Description: '{description}'\n");
 
         var newGuid = Guid.NewGuid();
 
@@ -69,7 +63,7 @@ public static class RecordsPlayground
 
         // Compare hashcode
         Console.WriteLine($"user1.GetHashCode(): {user1.GetHashCode()}");
-        Console.WriteLine($"user2.GetHashCode(): {user2.GetHashCode()}");
+        Console.WriteLine($"user2.GetHashCode(): {user2.GetHashCode()}\n");
 
         // Switch statement with property patterns
         switch (user2)
@@ -91,12 +85,12 @@ public static class RecordsPlayground
             { Age: >= 65 } => "Senior",
             _ => "Unknown"
         };
-        Console.WriteLine($"user2 is in age group: {ageGroup}");
+        Console.WriteLine($"user2 is in age group: {ageGroup}\n");
 
         // Deconstructing records (positional deconstruction)
         var (id, username, email, age, roleValue, nicknames) = user2;
         Console.WriteLine(
-            $"Deconstructed user2: Id={id}, Username={username}, Email={email}, Age={age}, Role={roleValue}, Nicknames=[{string.Join(", ", nicknames)}]");
+            $"Deconstructed user2: Id={id}, Username={username}, Email={email}, Age={age}, Role={roleValue}, Nicknames=[{string.Join(", ", nicknames)}]\n");
 
         // Copy with `with` expression
         var user3 = user2 with { Age = 50, Username = "new-name" };
