@@ -74,7 +74,7 @@ public static class SetsPlayground
         Console.WriteLine("A ∩ B: " + string.Join(", ", intersection));
         Console.WriteLine("A - B: " + string.Join(", ", except));
         Console.WriteLine("(A - B) ∪ (B - A): " + string.Join(", ", symmetricExcept));
-        var c = ImmutableHashSet.Create(1,2, 3);
+        var c = ImmutableHashSet.Create(1, 2, 3);
         var d = ImmutableHashSet.Create(2);
         Console.WriteLine("C ⊆ D: " + c.IsSubsetOf(d)); // C is subset of D === (D.....(C)....) => false
         Console.WriteLine("C ⊇ D: " + c.IsSupersetOf(d)); // C is superset of D === (C.....(D)....) => true
