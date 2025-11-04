@@ -10,6 +10,7 @@ public static class SetsPlayground
         // IReadOnlySet<int> is similar to Kotlin Set<Int>
         // ISet<int> is similar to Kotlin MutableSet<Int>
         // HashSet<int> is similar to Kotlin HashSet<Int>
+        // SortedSet<int> is similar to Kotlin TreeSet<Int>
         var hashSet = new HashSet<int>([1, 2, 3, 3, 2, 1]);
         Console.WriteLine("HashSet: " + string.Join(", ", hashSet) + ", count = " + hashSet.Count);
 
