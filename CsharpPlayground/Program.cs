@@ -1,7 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using CsharpPlayground;
+using CsharpPlayground.Advanced;
+using CsharpPlayground.AsyncProgramming;
 using CsharpPlayground.Collections;
+using CsharpPlayground.DelegatesAndEvents;
+using CsharpPlayground.LINQ;
 using CsharpPlayground.OOP;
 
 Console.WriteLine("Hello, World!");
@@ -65,3 +69,18 @@ RecordsPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
 Default.Run();
+
+Console.WriteLine(new string('-', 30));
+LinqPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+DelegatesAndEventsPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+ExceptionHandlingPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+InterfacesAndGenericsPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+await AsyncPlayground.Run();
