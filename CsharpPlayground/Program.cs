@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using CsharpPlayground;
 using CsharpPlayground.Collections;
 using CsharpPlayground.OOP;
 
@@ -61,3 +62,6 @@ SetsPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
 RecordsPlayground.Run();
+
+Console.WriteLine(new string('-', 30));
+Default.Run();
