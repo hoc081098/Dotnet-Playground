@@ -24,9 +24,9 @@ public static class Default
 
     private enum SomeEnum
     {
-        None,
         First,
         Second,
+        None = 0, // default(SomeEnum) == 0
     }
 
     public static void Run()
