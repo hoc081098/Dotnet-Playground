@@ -108,6 +108,21 @@ public static class LinqPlayground
         PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc1);
         PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc2);
         PrintSeparator();
+        
+        // ===== Aggregation - similar to Kotlin's reduce, sum, etc. =====
+        var totalValue = products.Sum(p => p.Price * p.Stock);
+        var averagePrice = products.Average(p => p.Price);
+        var maxPrice = products.Max(p => p.Price);
+        var minPrice = products.Min(p => p.Price);
+        var productCount = products.Count();
+        var electronicsCount = products.Count(p => p.Category == "Electronics");
+        Console.WriteLine("Aggregate Statistics:");
+        Console.WriteLine($"- Total Inventory Value: {totalValue}");
+        Console.WriteLine($"- Average Price: {averagePrice}");
+        Console.WriteLine($"- Max Price: {maxPrice}");
+        Console.WriteLine($"- Min Price: {minPrice}");
+        Console.WriteLine($"- Total Product Count: {productCount}");
+        Console.WriteLine($"- Electronics Product Count: {electronicsCount}");
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
