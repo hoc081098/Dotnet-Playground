@@ -166,20 +166,34 @@ public static class LinqPlayground
         var hasExpensiveProducts = products.Any(p => p.Price > 1000m);
         Console.WriteLine($"All Products In Stock: {allInStock}");
         Console.WriteLine($"Has Expensive Products: {hasExpensiveProducts}");
+        PrintSeparator();
 
         // ===== Take, Skip - similar to Kotlin's take, drop =====
         var subProducts1 = products.Skip(2).Take(2).ToList();
         var subProducts2 = products.GetRange(index: 2, count: 2);
         var subProducts3 = products.GetRange(2..4);
-        Console.WriteLine($"Sub-Products In Stock 1: {string.Join(", ", subProducts1)}");
-        Console.WriteLine($"Sub-Products In Stock 2: {string.Join(", ", subProducts2)}");
-        Console.WriteLine($"Sub-Products In Stock 3: {string.Join(", ", subProducts3)}");
+        PrintResult($"Sub-Products In Stock 1", subProducts1);
+        PrintResult($"Sub-Products In Stock 2", subProducts2);
+        PrintResult($"Sub-Products In Stock 3", subProducts3);
+        PrintSeparator();
 
         // ==== Distinct - similar to Kotlin's distinct =====
         var categories = products.Select(p => p.Category).Distinct();
         var dates = orders.Select(o => o.OrderDate.Date).Distinct();
-        Console.WriteLine("Distinct Product Categories: " + string.Join(", ", categories));
-        Console.WriteLine("Distinct Order Dates: " + string.Join(", ", dates));
+        PrintResult("Distinct Product Categories: ", categories);
+        PrintResult("Distinct Order Dates: ", dates);
+        PrintSeparator();
+
+        IEnumerable<(Product p, Order o)> join1 = products.Join(inner: orders,
+            outerKeySelector: p => p.Id,
+            innerKeySelector: o => o.Id,
+            resultSelector: (p, o) => (p, o));
+        IEnumerable<(Product p, Order o)> join2 = from p in products
+            join o in orders on p.Id equals o.Id
+            select (p, o);
+        PrintResult("Join Products and Orders on ProductId (method):", join1);
+        PrintResult("Join Products and Orders on ProductId (query):", join2);
+        PrintSeparator();
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
