@@ -184,6 +184,7 @@ public static class LinqPlayground
         PrintResult("Distinct Order Dates: ", dates);
         PrintSeparator();
 
+        // ===== Join - similar to Kotlin's groupBy + flatMap =====
         IEnumerable<(Product p, Order o)> join1 = products.Join(inner: orders,
             outerKeySelector: p => p.Id,
             innerKeySelector: o => o.Id,
