@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
 namespace CsharpPlayground.Collections;
@@ -80,6 +81,7 @@ public static class ListsPlayground
 
 public static class ListExtensions
 {
+    [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static List<T> GetRange<T>(this List<T> @this, Range range)
     {

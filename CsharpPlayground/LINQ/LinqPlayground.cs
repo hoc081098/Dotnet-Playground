@@ -1,3 +1,6 @@
+using System.Security.AccessControl;
+using CsharpPlayground.Collections;
+
 namespace CsharpPlayground.LINQ;
 
 /// <summary>
@@ -37,10 +40,11 @@ public static class LinqPlayground
         List<Order> orders =
         [
             new(Id: 1, ProductId: 1, Quantity: 2, OrderDate: now.AddDays(value: -5)),
-            new(Id: 2, ProductId: 2, Quantity: 5, OrderDate: now.AddDays(value: -3)),
-            new(Id: 3, ProductId: 1, Quantity: 1, OrderDate: now.AddDays(value: -2)),
-            new(Id: 4, ProductId: 4, Quantity: 3, OrderDate: now.AddDays(value: -1))
+            new(Id: 2, ProductId: 2, Quantity: 5, OrderDate: now.AddHours(value: -3)),
+            new(Id: 3, ProductId: 1, Quantity: 1, OrderDate: now.AddHours(value: -2)),
+            new(Id: 4, ProductId: 4, Quantity: 3, OrderDate: now.AddHours(value: 10))
         ];
+        PrintSeparator();
 
         // ===== Filtering (Where) - similar to Kotlin's filter =====
         var filteredProducts1 = products.Where(p => p is { Price: > 100, Stock: > 10 });
@@ -128,7 +132,7 @@ public static class LinqPlayground
         Console.WriteLine($"- Electronics Product Count: {electronicsCount}");
         PrintSeparator();
 
-        // ===== First, Last, Single =====
+        // ===== First, Last, Single - similar to Kotlin's first, last, single =====
         var firstOrder = orders.First();
         var firstOrderWithQuantityOne = orders.First(o => o.Quantity == 1);
         var lastOrder = orders.Last();
@@ -156,6 +160,26 @@ public static class LinqPlayground
         var single = new List<string> { "hello" }.Single();
         Console.WriteLine($"Single from single-item list: {single}");
         PrintSeparator();
+
+        // ===== All, Any - similar to Kotlin's all, any =====
+        var allInStock = products.All(p => p.Stock > 0m);
+        var hasExpensiveProducts = products.Any(p => p.Price > 1000m);
+        Console.WriteLine($"All Products In Stock: {allInStock}");
+        Console.WriteLine($"Has Expensive Products: {hasExpensiveProducts}");
+
+        // ===== Take, Skip - similar to Kotlin's take, drop =====
+        var subProducts1 = products.Skip(2).Take(2).ToList();
+        var subProducts2 = products.GetRange(index: 2, count: 2);
+        var subProducts3 = products.GetRange(2..4);
+        Console.WriteLine($"Sub-Products In Stock 1: {string.Join(", ", subProducts1)}");
+        Console.WriteLine($"Sub-Products In Stock 2: {string.Join(", ", subProducts2)}");
+        Console.WriteLine($"Sub-Products In Stock 3: {string.Join(", ", subProducts3)}");
+
+        // ==== Distinct - similar to Kotlin's distinct =====
+        var categories = products.Select(p => p.Category).Distinct();
+        var dates = orders.Select(o => o.OrderDate.Date).Distinct();
+        Console.WriteLine("Distinct Product Categories: " + string.Join(", ", categories));
+        Console.WriteLine("Distinct Order Dates: " + string.Join(", ", dates));
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
