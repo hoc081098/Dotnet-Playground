@@ -14,7 +14,7 @@ namespace CsharpPlayground.LINQ;
 ///  - IEnumerable&lt;T&gt; for in-memory queries
 ///  - IQueryable&lt;T&gt; for database queries (EF Core)
 /// </summary>
-public class LinqPlayground
+public static class LinqPlayground
 {
     private record Product(int Id, string Name, decimal Price, string Category, int Stock);
 
@@ -96,17 +96,17 @@ public class LinqPlayground
 
 
         // ==== Sorting (OrderBy, ThenBy) - similar to Kotlin's sortedBy, sortedWith =====
-        var ps = products.OrderByDescending(p => p.Price)
+        var top5ProductsByPriceDesc1 = products.OrderByDescending(p => p.Price)
             .ThenBy(p => p.Name)
             .Take(5);
-        var ps2 = (
+        var top5ProductsByPriceDesc2 = (
             from p in products
             orderby p.Price descending, p.Name
             select p
         ).Take(5);
 
-        PrintResult("Products sorted by Price (desc) then Name (asc):", ps);
-        PrintResult("Products sorted by Price (desc) then Name (asc):", ps2);
+        PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc1);
+        PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc2);
         PrintSeparator();
     }
 
