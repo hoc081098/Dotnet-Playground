@@ -108,13 +108,16 @@ public static class LinqPlayground
         PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc1);
         PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc2);
         PrintSeparator();
-        
+
         // ===== Aggregation - similar to Kotlin's reduce, sum, etc. =====
         var totalValue = products.Sum(p => p.Price * p.Stock);
         var averagePrice = products.Average(p => p.Price);
         var maxPrice = products.Max(p => p.Price);
         var minPrice = products.Min(p => p.Price);
+        // It is more efficient to use Count property for collections, but using Count() here for demonstration
+#pragma warning disable CA1829
         var productCount = products.Count();
+#pragma warning restore CA1829
         var electronicsCount = products.Count(p => p.Category == "Electronics");
         Console.WriteLine("Aggregate Statistics:");
         Console.WriteLine($"- Total Inventory Value: {totalValue}");
@@ -123,6 +126,32 @@ public static class LinqPlayground
         Console.WriteLine($"- Min Price: {minPrice}");
         Console.WriteLine($"- Total Product Count: {productCount}");
         Console.WriteLine($"- Electronics Product Count: {electronicsCount}");
+        PrintSeparator();
+
+        // ===== First, Last, Single =====
+        var firstOrder = orders.First();
+        var firstOrderWithQuantityOne = orders.First(o => o.Quantity == 1);
+        var lastOrder = orders.Last();
+        var lastOrderForProduct2 = orders.Last(o => o.ProductId == 2);
+        
+        Console.WriteLine($"First Order: {firstOrder}");
+        Console.WriteLine($"First Order with Quantity 1: {firstOrderWithQuantityOne}");
+        Console.WriteLine($"Last Order: {lastOrder}");
+        Console.WriteLine($"Last Order for ProductId 2: {lastOrderForProduct2}");
+        try
+        {
+            var singleOrder = orders.Single();
+            Console.WriteLine($"Single Order: {singleOrder}");
+        }
+        catch (InvalidOperationException e)
+        {
+            Console.WriteLine(
+                "Single() threw InvalidOperationException as expected because there are multiple orders.");
+        }
+        var single = new List<string> { "hello" }.Single();
+        Console.WriteLine($"Single from single-item list: {single}");
+        
+        PrintSeparator();
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
