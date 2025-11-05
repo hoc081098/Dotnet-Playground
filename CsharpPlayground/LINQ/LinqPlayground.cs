@@ -76,7 +76,7 @@ public class LinqPlayground
         Dictionary<string, string> productByCategories = products.AggregateBy(
             keySelector: p => p.Category,
             seed: "",
-            func: (acc, e) => acc is [] ? e.Name : $"{acc}, {e.Name}"
+            func: (acc, e) => string.IsNullOrEmpty(acc) ? e.Name : $"{acc}, {e.Name}"
         ).ToDictionary();
         PrintResult("Product names aggregated by Category:", productByCategories);
         PrintSeparator();
