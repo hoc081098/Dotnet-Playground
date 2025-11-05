@@ -2,6 +2,7 @@
 
 using CsharpPlayground;
 using CsharpPlayground.Collections;
+using CsharpPlayground.LINQ;
 using CsharpPlayground.OOP;
 
 Console.WriteLine("Hello, World!");
@@ -65,3 +66,6 @@ RecordsPlayground.Run();
 
 Console.WriteLine(new string('-', 30));
 Default.Run();
+
+Console.WriteLine(new string('-', 30));
+LinqPlayground.Run();
