@@ -133,11 +133,13 @@ public static class LinqPlayground
         var firstOrderWithQuantityOne = orders.First(o => o.Quantity == 1);
         var lastOrder = orders.Last();
         var lastOrderForProduct2 = orders.Last(o => o.ProductId == 2);
-        
+        var firstOrDefaultCheap = products.FirstOrDefault(p => p.Price < 10); // Returns null if not found
+
         Console.WriteLine($"First Order: {firstOrder}");
         Console.WriteLine($"First Order with Quantity 1: {firstOrderWithQuantityOne}");
         Console.WriteLine($"Last Order: {lastOrder}");
         Console.WriteLine($"Last Order for ProductId 2: {lastOrderForProduct2}");
+        Console.WriteLine($"FirstOrDefault for cheap product (< $10): {firstOrDefaultCheap?.ToString() ?? "null"}");
         try
         {
             var singleOrder = orders.Single();
@@ -145,12 +147,14 @@ public static class LinqPlayground
         }
         catch (InvalidOperationException e)
         {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
             Console.WriteLine(
                 "Single() threw InvalidOperationException as expected because there are multiple orders.");
         }
+
         var single = new List<string> { "hello" }.Single();
         Console.WriteLine($"Single from single-item list: {single}");
-        
         PrintSeparator();
     }
 
