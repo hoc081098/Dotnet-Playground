@@ -344,7 +344,7 @@ public static class LinqPlayground
         var sql = """
                   SELECT
                        p.category,
-                       SUM(DISTINCT p.id) AS distinct_products_sold,
+                       COUNT(DISTINCT p.id) AS distinct_products_sold,
                        SUM(o.quantity * p.price) AS total_revenue,
                        SUM(o.quantity) AS total_quantity
                   FROM orders o
