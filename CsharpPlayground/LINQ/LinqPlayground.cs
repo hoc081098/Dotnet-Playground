@@ -329,7 +329,8 @@ public static class LinqPlayground
             .Select(grouping => new
             {
                 Category = grouping.Key,
-                DistinctProductsSold = grouping.Select(static orderAndProduct => orderAndProduct.product.Id).Distinct()
+                DistinctProductsSold = grouping.Select(static orderAndProduct => orderAndProduct.product.Id)
+                    .Distinct()
                     .Count(),
                 TotalRevenue = grouping.Sum(static orderAndProduct =>
                     orderAndProduct.order.Quantity * orderAndProduct.product.Price),
@@ -338,6 +339,20 @@ public static class LinqPlayground
             .OrderByDescending(stat => stat.TotalRevenue);
         PrintResult("Complex Query Example (query syntax):", stats1);
         PrintResult("Complex Query Example (method chain syntax):", stats2);
+        PrintSeparator();
+
+        var sql = """
+                  SELECT
+                       p.category,
+                       SUM(DISTINCT p.id) AS distinct_products_sold,
+                       SUM(o.quantity * p.price) AS total_revenue,
+                       SUM(o.quantity) AS total_quantity
+                  FROM orders o
+                       INNER JOIN products p ON o.product_id = p.id
+                  GROUP BY p.category
+                  ORDER BY total_revenue DESC;
+                  """;
+        Console.WriteLine(sql);
         PrintSeparator();
 
         // ===== Deferred execution demonstration =====
