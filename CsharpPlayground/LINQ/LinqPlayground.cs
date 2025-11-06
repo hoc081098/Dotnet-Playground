@@ -218,10 +218,10 @@ public static class LinqPlayground
                 product => product.Id,
                 (order, productGroup) => (order, productGroup))
             .SelectMany(
-                tuple => tuple.productGroup.DefaultIfEmpty(),
-                (tuple, product) => new
+                orderWithProducts => orderWithProducts.productGroup.DefaultIfEmpty(),
+                (orderWithProducts, product) => new
                 {
-                    Order = tuple.order,
+                    Order = orderWithProducts.order,
                     Product = product?.Name ?? "Product not found"
                 }
             );
