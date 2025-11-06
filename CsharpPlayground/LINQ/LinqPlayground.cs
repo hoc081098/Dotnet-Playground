@@ -103,8 +103,18 @@ public static class LinqPlayground
         PrintResult("Product names aggregated by Category:", productByCategories);
         PrintSeparator();
 
+        // Group by first letter, and count items per group - similar to Kotlin's groupingBy { ... }.eachCount()
+        var fruits = new[] { "apple", "apricot", "banana", "cherry", "avocado" };
+        IEnumerable<KeyValuePair<char, int>> result = fruits.AggregateBy(
+            keySelector: f => f[0],
+            seedSelector: _ => 0,
+            func: (acc, _) => acc + 1
+        ).ToDictionary();
+        PrintResult("Fruits count by first letter:", result);
+        PrintSeparator();
+
         // ===== Grouping (GroupBy + ToDictionary) - similar to Kotlin's groupBy =====
-        Dictionary<string, List<Product>> productsByCategories = products
+        Dictionary<string, List<Product>> productsByCategories1 = products
             .GroupBy(
                 keySelector: p => p.Category,
                 elementSelector: p => p
@@ -113,7 +123,18 @@ public static class LinqPlayground
                 keySelector: g => g.Key,
                 elementSelector: g => g.ToList()
             );
-        var categoryStats = products
+        Dictionary<string, List<Product>> productsByCategories2 = (from p in products
+                group p by p.Category
+                into ps
+                select KeyValuePair.Create(ps.Key, ps.ToList())
+            )
+            .ToDictionary();
+        PrintResult("Products grouped by Category (method):", productsByCategories1, pair =>
+            $"{pair.Key}: [{string.Join(", ", pair.Value.Select(p => p.Name))}]");
+        PrintResult("Products grouped by Category (query):", productsByCategories2, pair =>
+            $"{pair.Key}: [{string.Join(", ", pair.Value.Select(p => p.Name))}]");
+
+        var categoryStats1 = products
             .GroupBy(product => product.Category)
             .Select(grouping =>
             {
@@ -127,8 +148,7 @@ public static class LinqPlayground
                     TopProduct = grouping.OrderByDescending(p => p.Price).First().Name,
                 };
             });
-        PrintResult("Products grouped by Category:", productsByCategories);
-        PrintResult("Category Statistics:", categoryStats);
+        PrintResult("Category Statistics:", categoryStats1);
         PrintSeparator();
 
 
@@ -343,9 +363,16 @@ public static class LinqPlayground
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
 
-    private static void PrintResult<T>(string title, IEnumerable<T> list)
+    private static void PrintResult<T>(string title, IEnumerable<T> list, Func<T, string>? formatter = null)
     {
         Console.WriteLine(title);
-        Console.WriteLine(string.Join(", \n", list));
+        if (formatter is null)
+        {
+            Console.WriteLine(string.Join(", \n", list));
+        }
+        else
+        {
+            Console.WriteLine(string.Join(", \n", list.Select(formatter)));
+        }
     }
 }
