@@ -115,9 +115,10 @@ public static class LinqPlayground
 
         // ===== Aggregation - similar to Kotlin's reduce, sum, etc. =====
         var totalValue = products.Sum(p => p.Price * p.Stock);
-        var averagePrice = products.Average(p => p.Price);
-        var maxPrice = products.Max(p => p.Price);
-        var minPrice = products.Min(p => p.Price);
+        // Use DefaultIfEmpty to avoid InvalidOperationException on empty collections for Average, Max, Min
+        var averagePrice = products.DefaultIfEmpty().Average(p => p?.Price);
+        var maxPrice = products.DefaultIfEmpty().Max(p => p?.Price);
+        var minPrice = products.DefaultIfEmpty().Min(p => p?.Price);
         // It is more efficient to use Count property for collections, but using Count() here for demonstration
 #pragma warning disable CA1829
         var productCount = products.Count();
