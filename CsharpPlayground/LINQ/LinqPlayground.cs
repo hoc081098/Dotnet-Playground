@@ -129,10 +129,12 @@ public static class LinqPlayground
                 select KeyValuePair.Create(ps.Key, ps.ToList())
             )
             .ToDictionary();
-        PrintResult("Products grouped by Category (method):", productsByCategories1, pair =>
-            $"{pair.Key}: [{string.Join(", ", pair.Value.Select(p => p.Name))}]");
-        PrintResult("Products grouped by Category (query):", productsByCategories2, pair =>
-            $"{pair.Key}: [{string.Join(", ", pair.Value.Select(p => p.Name))}]");
+
+        string Formatter(KeyValuePair<string, List<Product>> pair) =>
+            $"{pair.Key}: [{string.Join(", ", pair.Value.Select(p => p.Name))}]";
+
+        PrintResult("Products grouped by Category (method):", productsByCategories1, Formatter);
+        PrintResult("Products grouped by Category (query):", productsByCategories2, Formatter);
 
         var categoryStats1 = products
             .GroupBy(product => product.Category)
