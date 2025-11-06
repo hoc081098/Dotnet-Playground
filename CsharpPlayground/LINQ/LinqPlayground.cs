@@ -118,6 +118,9 @@ public static class LinqPlayground
 
         // ===== Grouping (GroupBy) - similar to Kotlin's groupBy {...}.toList() =====
         // GroupBy: IEnumerable<IGrouping<TKey, TElement>>
+        // Query syntax: from ... in ...
+        //               group ... by ... into grouping
+        //               select ...
         Dictionary<string, List<Product>> productsByCategories1 = products
             .GroupBy(
                 keySelector: p => p.Category,
@@ -170,6 +173,9 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ==== Sorting (OrderBy, ThenBy) - similar to Kotlin's sortedBy, sortedWith =====
+        // Query syntax: from ... in ...
+        //               orderby ... [ascending|descending], ...
+        //               select ...
         var top5ProductsByPriceDesc1 = products.OrderByDescending(p => p.Price)
             .ThenBy(p => p.Name)
             .Take(5);
@@ -256,6 +262,9 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ===== Join - similar to Kotlin's groupBy + flatMap =====
+        // Query syntax: from ... in ...
+        //               join ... in ... on ... equals ...
+        //               select ...
         IEnumerable<(Product p, Order o)> join1 = products.Join(inner: orders,
             outerKeySelector: p => p.Id,
             innerKeySelector: o => o.ProductId,
@@ -268,6 +277,10 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ==== Left Join - similar to Kotlin's groupBy + flatMap with default =====
+        // Query syntax: from ... in ...
+        //               join ... in ... on ... equals ... into ps
+        //               from ... in ps.DefaultIfEmpty()
+        //               select ... ps?....
         var leftJoin1 = orders.GroupJoin(products,
                 order => order.ProductId,
                 product => product.Id,
@@ -398,13 +411,10 @@ public static class LinqPlayground
     private static void PrintResult<T>(string title, IEnumerable<T> list, Func<T, string>? formatter = null)
     {
         Console.WriteLine(title);
-        if (formatter is null)
-        {
-            Console.WriteLine(string.Join(", \n", list));
-        }
-        else
-        {
-            Console.WriteLine(string.Join(", \n", list.Select(formatter)));
-        }
+        Console.WriteLine(
+            formatter is null
+                ? string.Join(", \n", list)
+                : string.Join(", \n", list.Select(formatter))
+        );
     }
 }
