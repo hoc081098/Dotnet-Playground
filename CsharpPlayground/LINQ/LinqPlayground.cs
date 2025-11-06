@@ -25,6 +25,23 @@ public static class LinqPlayground
 
     public static void Run()
     {
+        // Sections:
+        // 1. Filtering (Where)
+        // 2. Projection (Select)
+        // 3. FlatMapping (SelectMany)
+        // 4. Reduction (Aggregate)
+        // 5. Grouping and Aggregation
+        // 6. Sorting
+        // 7. Aggregation Methods (Sum, Average, etc.)
+        // 8. Element Queries (First, Last, Single)
+        // 9. Quantifiers (All, Any)
+        // 10. Paging (Take, Skip)
+        // 11. Distinct
+        // 12. Joins (Inner, Left)
+        // 13. Combined Query Syntax Example
+        // 14. Complex Query Example
+        // 15. Deferred Execution
+
         List<Product> products =
         [
             new(Id: 1, Name: "Laptop", Price: 1200m, Category: "Electronics", Stock: 10),
@@ -204,10 +221,10 @@ public static class LinqPlayground
         // ===== Join - similar to Kotlin's groupBy + flatMap =====
         IEnumerable<(Product p, Order o)> join1 = products.Join(inner: orders,
             outerKeySelector: p => p.Id,
-            innerKeySelector: o => o.Id,
+            innerKeySelector: o => o.ProductId,
             resultSelector: (p, o) => (p, o));
         IEnumerable<(Product p, Order o)> join2 = from p in products
-            join o in orders on p.Id equals o.Id
+            join o in orders on p.Id equals o.ProductId
             select (p, o);
         PrintResult("Join Products and Orders on ProductId (method):", join1);
         PrintResult("Join Products and Orders on ProductId (query):", join2);
@@ -303,12 +320,13 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ===== Deferred execution demonstration =====
+        // "Count()" triggers execution each time, because it's deferred
         Console.WriteLine("\n=== Deferred Execution ===");
         var query = products.Where(p => p.Price > 100);
         Console.WriteLine("Query defined but not executed yet");
         Console.WriteLine($"Query executed - found {query.Count()} products");
 
-        products.Add(new Product(Id: 8, Name: "Tablet", Price: 600m, Category: "Electronics", Stock: 12));
+        products.Add(new Product(Id: 9, Name: "Tablet", Price: 600m, Category: "Electronics", Stock: 12));
         Console.WriteLine("Added Tablet to products");
 
         // Query executes here and includes the newly added product
@@ -316,9 +334,11 @@ public static class LinqPlayground
 
         // ===== ToList(), ToArray() - immediate execution =====
         var productList = products.Where(p => p.Price > 100).ToList(); // Executes immediately
-        products.Add(new Product(Id: 9, Name: "Phone", Price: 800m, Category: "Electronics", Stock: 5));
+        products.Add(new Product(Id: 10, Name: "Phone", Price: 800m, Category: "Electronics", Stock: 5));
         Console.WriteLine($"products.Where: List count (doesn't include Phone): {productList.Count}");
         Console.WriteLine($"products: Query count (includes Phone): {products.Count(p => p.Price > 100)}");
+
+        Console.WriteLine("✅ LINQ Playground finished successfully.");
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
