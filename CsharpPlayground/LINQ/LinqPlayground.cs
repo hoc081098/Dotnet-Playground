@@ -213,6 +213,7 @@ public static class LinqPlayground
         PrintResult("Join Products and Orders on ProductId (query):", join2);
         PrintSeparator();
 
+        // ==== Left Join - similar to Kotlin's groupBy + flatMap with default =====
         var leftJoin1 = orders.GroupJoin(products,
                 order => order.ProductId,
                 product => product.Id,
@@ -235,6 +236,26 @@ public static class LinqPlayground
             };
         PrintResult("Left Join Orders and Products (method):", leftJoin1);
         PrintResult("Left Join Orders and Products (query):", leftJoin2);
+        PrintSeparator();
+
+        var querySyntax1 = from p in products
+            where p is { Category: "Electronics", Price: > 100 }
+            select new { p.Name, p.Price }
+            into filtered
+            orderby filtered.Price descending
+            let name = filtered.Name.ToUpper()
+            select name;
+        var methodChainSyntax1 = products
+            .Where(p => p is { Category: "Electronics", Price: > 100 })
+            .Select(p => new { p.Name, p.Price })
+            .OrderByDescending(filtered => filtered.Price)
+            .Select(filtered =>
+            {
+                var name = filtered.Name.ToUpper();
+                return name;
+            });
+        PrintResult("Combined Query Syntax:", querySyntax1);
+        PrintResult("Combined Method Chain Syntax:", methodChainSyntax1);
         PrintSeparator();
     }
 
