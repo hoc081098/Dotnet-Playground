@@ -95,7 +95,22 @@ public static class LinqPlayground
                 keySelector: g => g.Key,
                 elementSelector: g => g.ToList()
             );
+        var categoryStats = products
+            .GroupBy(product => product.Category)
+            .Select(grouping =>
+            {
+                // grouping is never empty here.
+                return new
+                {
+                    Category = grouping.Key,
+                    Amount = grouping.Count(),
+                    TotalPrice = grouping.Sum(p => p.Price),
+                    AveragePrice = grouping.Average(p => p.Price),
+                    TopProduct = grouping.OrderByDescending(p => p.Price).First().Name,
+                };
+            });
         PrintResult("Products grouped by Category:", productsByCategories);
+        PrintResult("Category Statistics:", categoryStats);
         PrintSeparator();
 
 
