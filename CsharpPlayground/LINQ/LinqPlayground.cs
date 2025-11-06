@@ -403,6 +403,20 @@ public static class LinqPlayground
         Console.WriteLine($"products.Where: List count (doesn't include Phone): {productList.Count}");
         Console.WriteLine($"products: Query count (includes Phone): {products.Count(p => p.Price > 100)}");
 
+        // ==== Zip - similar to Kotlin's zip =====
+        var numbers = new[] { 1, 2, 3, 4, 5 };
+        var words = Enumerable.Range(start: 1, count: 3).Select(i => $"Word{i}");
+        var zipped1 = numbers.Zip(words);
+        var zipped2 = numbers.Zip(words, (n, w) => $"{n}-{w}");
+        PrintResult("Zipped (tuples):", zipped1);
+        PrintResult("Zipped (formatted):", zipped2);
+        PrintSeparator();
+        
+        // ==== Chunk - similar to Kotlin's chunked =====
+        var chunked = numbers.Chunk(size: 2);
+        PrintResult("Chunked into size 2:", chunked, chunk => $"[{string.Join(", ", chunk)}]");
+        PrintSeparator();
+        
         Console.WriteLine("✅ LINQ Playground finished successfully.");
     }
 
