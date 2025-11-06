@@ -238,6 +238,7 @@ public static class LinqPlayground
         PrintResult("Left Join Orders and Products (query):", leftJoin2);
         PrintSeparator();
 
+        // ===== Query Syntax (alternative to method syntax) =====
         var querySyntax1 = from p in products
             where p is { Category: "Electronics", Price: > 100 }
             select new { p.Name, p.Price }
@@ -256,6 +257,46 @@ public static class LinqPlayground
             });
         PrintResult("Combined Query Syntax:", querySyntax1);
         PrintResult("Combined Method Chain Syntax:", methodChainSyntax1);
+        PrintSeparator();
+
+        // ==== Complex Query Example =====
+        // Join Orders with Products, group by Category, and calculate:
+        // - Distinct products sold
+        // - Total revenue
+        // - Total quantity sold
+        // Order by total revenue descending
+        var stats1 = from order in orders
+            join product in products on order.ProductId equals product.Id
+            group new { order, product } by product.Category
+            into g
+            let totalRevenue = g.Sum(static orderAndProduct => orderAndProduct.order.Quantity * orderAndProduct.product.Price)
+            orderby totalRevenue descending
+            select new
+            {
+                Category = g.Key,
+                DistinctProductsSold = g.Select(static orderAndProduct => orderAndProduct.product.Id)
+                    .Distinct()
+                    .Count(),
+                TotalRevenue = totalRevenue,
+                TotalQuantity = g.Sum(static orderAndProduct => orderAndProduct.order.Quantity),
+            };
+        var stats2 = orders
+            .Join(products,
+                order => order.ProductId,
+                product => product.Id,
+                (order, product) => new { order, product }
+            )
+            .GroupBy(orderAndProduct => orderAndProduct.product.Category)
+            .Select(grouping => new
+            {
+                Category = grouping.Key,
+                DistinctProductsSold = grouping.Select(static orderAndProduct => orderAndProduct.product.Id).Distinct().Count(),
+                TotalRevenue = grouping.Sum(static orderAndProduct => orderAndProduct.order.Quantity * orderAndProduct.product.Price),
+                TotalQuantity = grouping.Sum(static orderAndProduct => orderAndProduct.order.Quantity),
+            })
+            .OrderByDescending(stat => stat.TotalRevenue);
+        PrintResult("Complex Query Example (query syntax):", stats1);
+        PrintResult("Complex Query Example (method chain syntax):", stats2);
         PrintSeparator();
     }
 

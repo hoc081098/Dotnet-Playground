@@ -69,3 +69,5 @@ Default.Run();
 
 Console.WriteLine(new string('-', 30));
 LinqPlayground.Run();
+
+StaticLambdas.Run();
