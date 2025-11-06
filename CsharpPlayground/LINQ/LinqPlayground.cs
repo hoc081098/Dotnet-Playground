@@ -411,13 +411,47 @@ public static class LinqPlayground
         PrintResult("Zipped (tuples):", zipped1);
         PrintResult("Zipped (formatted):", zipped2);
         PrintSeparator();
-        
+
         // ==== Chunk - similar to Kotlin's chunked =====
         var chunked = numbers.Chunk(size: 2);
         PrintResult("Chunked into size 2:", chunked, chunk => $"[{string.Join(", ", chunk)}]");
         PrintSeparator();
-        
+
+        // ==== Yield Return Example with Deferred Execution =====
+        Console.WriteLine("Yield Return Example:");
+        var generatedNumbers = GenerateNumbers().Take(3);
+        Console.WriteLine("Defined generatedNumbers, but not iterated yet.");
+        PrintResult("Generated Numbers:", generatedNumbers);
+        PrintSeparator();
+
         Console.WriteLine("✅ LINQ Playground finished successfully.");
+    }
+
+    // Method returns IEnumerable<T> with yield returns
+    // Similar to Kotlin sequences using yield
+    private static IEnumerable<int> GenerateNumbers()
+    {
+        // [CompilerGenerated]
+        // private sealed class <GenerateNumbers>d__3 : 
+        //     IEnumerable<int>, IEnumerator<int>
+        // {
+        //     private int <>1__state;
+        //     private int <>2__current;
+        //     private int <>l__initialThreadId;
+        //     private int <i>5__1;
+        // 
+        //     public bool MoveNext();
+        //     public int Current { get; }
+        //     public IEnumerator<int> GetEnumerator();
+        // }
+        Console.WriteLine("[GenerateNumbers]: starting generation...");
+        for (var i = 1; i <= 5; i++)
+        {
+            Console.WriteLine($"[GenerateNumbers]: Generating number: {i}");
+            yield return i;
+        }
+
+        Console.WriteLine("[GenerateNumbers]: finished generation...");
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
