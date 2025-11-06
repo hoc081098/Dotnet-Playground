@@ -64,6 +64,7 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ===== Filtering (Where) - similar to Kotlin's filter =====
+        // Query syntax: from ... where ... select ...
         var filteredProducts1 = products.Where(p => p is { Price: > 100, Stock: > 10 });
         var filteredProducts2 = from p in products
             where p is { Price: > 100, Stock: > 10 }
@@ -73,6 +74,7 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ===== Projection (Select) - similar to Kotlin's map =====
+        // Query syntax: from ... select ...
         var nameAndPriceTuples1 = products.Select(p => new { p.Name, p.Price });
         var nameAndPriceTuples2 = from p in products
             select new { p.Name, p.Price };
@@ -81,6 +83,7 @@ public static class LinqPlayground
         PrintSeparator();
 
         // ===== FlatMapping (SelectMany) - similar to Kotlin's flatMap =====
+        // Query syntax: from ... from ... select ...
         var names1 = products.SelectMany(p => Enumerable.Repeat(p.Name, 2));
         var names2 = from p in products
             from n in Enumerable.Repeat(p.Name, 2)
@@ -93,7 +96,8 @@ public static class LinqPlayground
         var totalPrices = products.Aggregate(0m, (acc, p) => acc + p.Price);
         Console.WriteLine($"Total Prices of all Products: {totalPrices}");
 
-        // ===== Aggregation (AggregateBy + ToDictionary) - similar to Kotlin's groupingBy { ... }.fold() =====
+        // ===== Aggregation (AggregateBy) - similar to Kotlin's groupingBy { ... }.fold() =====
+        // AggregateBy: IEnumerable<KeyValuePair<TKey, TAccumulate>>
         Dictionary<string, string> productByCategories = products.AggregateBy(
             keySelector: p => p.Category,
             seed: "",
@@ -112,7 +116,8 @@ public static class LinqPlayground
         PrintResult("Fruits count by first letter:", result);
         PrintSeparator();
 
-        // ===== Grouping (GroupBy + ToDictionary) - similar to Kotlin's groupBy =====
+        // ===== Grouping (GroupBy) - similar to Kotlin's groupBy {...}.toList() =====
+        // GroupBy: IEnumerable<IGrouping<TKey, TElement>>
         Dictionary<string, List<Product>> productsByCategories1 = products
             .GroupBy(
                 keySelector: p => p.Category,
@@ -152,6 +157,17 @@ public static class LinqPlayground
         PrintResult("Category Statistics:", categoryStats1);
         PrintSeparator();
 
+        // ==== ToLookup - similar to Kotlin's groupBy returning Map<K, List<V>> =====
+        ILookup<string, Product> productsByCategoryLookup = products.ToLookup(p => p.Category);
+        foreach (var e in productsByCategoryLookup)
+        {
+            Console.WriteLine(
+                $"{e.Key}: [{string.Join(", ", e.Select(p => p.Name))}]");
+        }
+
+        var electronics = productsByCategoryLookup["Electronics"];
+        PrintResult("Products in Electronics category from Lookup:", electronics);
+        PrintSeparator();
 
         // ==== Sorting (OrderBy, ThenBy) - similar to Kotlin's sortedBy, sortedWith =====
         var top5ProductsByPriceDesc1 = products.OrderByDescending(p => p.Price)
@@ -167,7 +183,7 @@ public static class LinqPlayground
         PrintResult("Products sorted by Price (desc) then Name (asc):", top5ProductsByPriceDesc2);
         PrintSeparator();
 
-        // ===== Aggregation - similar to Kotlin's reduce, sum, etc. =====
+        // ===== Aggregation methods - similar to Kotlin's reduce, sum, etc. =====
         var totalValue = products.Sum(p => p.Price * p.Stock);
         // Use DefaultIfEmpty to avoid InvalidOperationException on empty collections for Average, Max, Min
         var averagePrice = products.DefaultIfEmpty().Average(p => p?.Price);
