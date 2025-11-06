@@ -269,7 +269,8 @@ public static class LinqPlayground
             join product in products on order.ProductId equals product.Id
             group new { order, product } by product.Category
             into g
-            let totalRevenue = g.Sum(static orderAndProduct => orderAndProduct.order.Quantity * orderAndProduct.product.Price)
+            let totalRevenue = g.Sum(static orderAndProduct =>
+                orderAndProduct.order.Quantity * orderAndProduct.product.Price)
             orderby totalRevenue descending
             select new
             {
@@ -290,14 +291,34 @@ public static class LinqPlayground
             .Select(grouping => new
             {
                 Category = grouping.Key,
-                DistinctProductsSold = grouping.Select(static orderAndProduct => orderAndProduct.product.Id).Distinct().Count(),
-                TotalRevenue = grouping.Sum(static orderAndProduct => orderAndProduct.order.Quantity * orderAndProduct.product.Price),
+                DistinctProductsSold = grouping.Select(static orderAndProduct => orderAndProduct.product.Id).Distinct()
+                    .Count(),
+                TotalRevenue = grouping.Sum(static orderAndProduct =>
+                    orderAndProduct.order.Quantity * orderAndProduct.product.Price),
                 TotalQuantity = grouping.Sum(static orderAndProduct => orderAndProduct.order.Quantity),
             })
             .OrderByDescending(stat => stat.TotalRevenue);
         PrintResult("Complex Query Example (query syntax):", stats1);
         PrintResult("Complex Query Example (method chain syntax):", stats2);
         PrintSeparator();
+
+        // ===== Deferred execution demonstration =====
+        Console.WriteLine("\n=== Deferred Execution ===");
+        var query = products.Where(p => p.Price > 100);
+        Console.WriteLine("Query defined but not executed yet");
+        Console.WriteLine($"Query executed - found {query.Count()} products");
+
+        products.Add(new Product(Id: 8, Name: "Tablet", Price: 600m, Category: "Electronics", Stock: 12));
+        Console.WriteLine("Added Tablet to products");
+
+        // Query executes here and includes the newly added product
+        Console.WriteLine($"Query executed - found {query.Count()} products");
+
+        // ===== ToList(), ToArray() - immediate execution =====
+        var productList = products.Where(p => p.Price > 100).ToList(); // Executes immediately
+        products.Add(new Product(Id: 9, Name: "Phone", Price: 800m, Category: "Electronics", Stock: 5));
+        Console.WriteLine($"products.Where: List count (doesn't include Phone): {productList.Count}");
+        Console.WriteLine($"products: Query count (includes Phone): {products.Count(p => p.Price > 100)}");
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
