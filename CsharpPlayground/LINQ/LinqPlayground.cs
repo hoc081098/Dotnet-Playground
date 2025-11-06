@@ -425,6 +425,23 @@ public static class LinqPlayground
         PrintSeparator();
 
         Console.WriteLine("✅ LINQ Playground finished successfully.");
+
+        // Demo of execution order in LINQ method chains
+        // That is vertical execution, not horizontal execution similar to Kotlin sequences
+        // Each element goes through the entire chain before moving to the next element
+        Console.WriteLine("LINQ Execution Order Demo:");
+        _ = Enumerable.Range(1, 10)
+            .Where((e) =>
+            {
+                Console.WriteLine($">>> filter {e}");
+                return e % 2 == 0;
+            })
+            .Select(e =>
+            {
+                Console.WriteLine($">>> map {e}");
+                return e.ToString();
+            })
+            .ToList();
     }
 
     // Method returns IEnumerable<T> with yield returns
