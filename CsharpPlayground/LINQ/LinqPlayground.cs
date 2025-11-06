@@ -42,7 +42,8 @@ public static class LinqPlayground
             new(Id: 1, ProductId: 1, Quantity: 2, OrderDate: now.AddDays(value: -5)),
             new(Id: 2, ProductId: 2, Quantity: 5, OrderDate: now.AddHours(value: -3)),
             new(Id: 3, ProductId: 1, Quantity: 1, OrderDate: now.AddHours(value: -2)),
-            new(Id: 4, ProductId: 4, Quantity: 3, OrderDate: now.AddHours(value: 10))
+            new(Id: 4, ProductId: 4, Quantity: 3, OrderDate: now.AddHours(value: 10)),
+            new(Id: 5, ProductId: 100, Quantity: 5, OrderDate: now.AddHours(value: 10))
         ];
         PrintSeparator();
 
@@ -210,6 +211,30 @@ public static class LinqPlayground
             select (p, o);
         PrintResult("Join Products and Orders on ProductId (method):", join1);
         PrintResult("Join Products and Orders on ProductId (query):", join2);
+        PrintSeparator();
+
+        var leftJoin1 = orders.GroupJoin(products,
+                order => order.ProductId,
+                product => product.Id,
+                (order, productGroup) => (order, productGroup))
+            .SelectMany(
+                tuple => tuple.productGroup.DefaultIfEmpty(),
+                (tuple, product) => new
+                {
+                    Order = tuple.order,
+                    Product = product?.Name ?? "Product not found"
+                }
+            );
+        var leftJoin2 = from o in orders
+            join p in products on o.ProductId equals p.Id into productGroup
+            from ps in productGroup.DefaultIfEmpty()
+            select new
+            {
+                Order = o,
+                Product = ps?.Name ?? "Product not found"
+            };
+        PrintResult("Left Join Orders and Products (method):", leftJoin1);
+        PrintResult("Left Join Orders and Products (query):", leftJoin2);
         PrintSeparator();
     }
 
