@@ -424,6 +424,13 @@ public static class LinqPlayground
         PrintResult("Generated Numbers:", generatedNumbers);
         PrintSeparator();
 
+        foreach (var n in GetNumbersUntilNegative([1, 2, 3, -1, 4, 5]))
+        {
+            Console.WriteLine($"Received number: {n}");
+        }
+
+        PrintSeparator();
+
         Console.WriteLine("✅ LINQ Playground finished successfully.");
 
         // Demo of execution order in LINQ method chains
@@ -469,6 +476,27 @@ public static class LinqPlayground
         }
 
         Console.WriteLine("[GenerateNumbers]: finished generation...");
+    }
+
+    private static IEnumerable<int> GetNumbersUntilNegative(IEnumerable<int> numbers)
+    {
+        foreach (var num in numbers)
+        {
+            if (num >= 0)
+            {
+                // `yield return` provides an element and pauses execution
+                yield return num;
+            }
+            else
+            {
+                // Stop iterating if a negative number is encountered
+
+                // `yield break` completely stops the iteration.
+                // Analogy: Think of `yield break` as a return statement in a regular method,
+                // but specifically for iterator blocks, indicating that the sequence has ended.
+                yield break;
+            }
+        }
     }
 
     private static void PrintSeparator() => Console.WriteLine(new string('-', 80));
