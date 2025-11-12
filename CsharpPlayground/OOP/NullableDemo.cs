@@ -30,6 +30,13 @@ public class NullableDemo
         var nonNull3 = (int)n!;
 
         Console.WriteLine($"n = {n}, nonNull1 = {nonNull1}, nonNull2 = {nonNull2}, nonNull3 = {nonNull3}");
+
+        // Boxing: only the underlying T type is boxed
+        object? boxed1 = n; // Boxing: copy n.Value to heap if n.HasValue == true; otherwise, boxed1 is null.
+        n = null;
+        object? boxed2 = n; // Boxing: boxed2 is null because n.HasValue == false.
+        Console.WriteLine("type of boxed1 is " + boxed1?.GetType()); // System.Int32
+        Console.WriteLine("type of boxed2 is " + boxed2?.GetType());
     }
 
     private static int ComputeIntValue() => Random.Shared.Next();
