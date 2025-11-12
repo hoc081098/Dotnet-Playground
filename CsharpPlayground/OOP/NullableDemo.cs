@@ -4,10 +4,12 @@ public class NullableDemo
 {
     public static void Run()
     {
-        // int? === Nullable<int>
-        // Because the values of value types (e.g., int, bool, struct) cannot be null,
-        // C# provides Nullable<T> struct to wrap value types to make them nullable.
-        // The syntax sugar `T?` is provided to represent `Nullable<T>`.
+        // T? === Nullable<T> where T: struct (non-nullable value type)
+        // - Because the values of value types (e.g., int, bool, struct) cannot be null by default,
+        //   C# provides Nullable<T> struct to wrap value types to make them nullable.
+        // - Nullable has 2 main properties: HasValue (bool) and Value (T).
+        // - The syntax sugar `T?` is provided to represent `Nullable<T>`.
+        //   You cannot create nested nullable types, such as Nullable<Nullable<T>> because the constraint of T.
 
         // Under the hood (use constructor)
         // - `= new Nullable<int>();`
