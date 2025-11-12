@@ -5,22 +5,25 @@ public class NullableDemo
     public static void Run()
     {
         // int? === Nullable<int>
+        // Because the values of value types (e.g., int, bool, struct) cannot be null,
+        // C# provides Nullable<T> struct to wrap value types to make them nullable.
+        // The syntax sugar `T?` is provided to represent `Nullable<T>`.
 
         // Under the hood (use constructor)
-        // - `new Nullable<int>();`
-        // - OR `new int?();`
+        // - `= new Nullable<int>();`
+        // - OR `= new int?();`
         Nullable<int> n = null;
 
         // Under the hood (use implicit operator)
-        // - `new Nullable<int>(2)`;
-        // - OR `new int?(2)`;
+        // - `= new Nullable<int>(2)`;
+        // - OR `= new int?(2)`;
         n = 2;
 
-        // Under the hood: `n.GetValueOrDefault(100);`
+        // Under the hood: `= n.GetValueOrDefault(100);`
         var nonNull1 = n ?? 100;
-        // Under the hood: `n.HasValue ? n.GetValueOrDefault() : ComputeIntValue();`
+        // Under the hood: `= n.HasValue ? n.GetValueOrDefault() : ComputeIntValue();`
         var nonNull2 = n ?? ComputeIntValue();
-        // Under the hood: `n.Value;` (use explicit operator)
+        // Under the hood: ` = n.Value;` (use explicit operator)
         // throws an InvalidOperationException if n.HasValue == false (i.e., n is null).
         var nonNull3 = (int)n!;
 
