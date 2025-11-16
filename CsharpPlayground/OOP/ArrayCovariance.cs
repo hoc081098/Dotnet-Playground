@@ -25,5 +25,8 @@ public static class ArrayCovariance
         {
             Console.WriteLine("Caught expected ArrayTypeMismatchException: " + e);
         }
+        
+        List<string> stringList = ["a", "b", "c"];
+        // List<object> objectList = stringList; // ❌ Compile-time error: List<T> is invariant, cannot assign List<string> to List<object>
     }
 }
