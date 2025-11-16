@@ -87,7 +87,7 @@ public class InterfacesAndGenericsPlayground
         {
             Console.WriteLine($"SumViaDynamic(List<int>, List<int>): {ex}");
         }
-        
+
         var employeeRepo = new Repository<Employee>();
         var employee1 = new Employee(1, "Alice");
         var employee2 = new Employee(2, "Bob");
@@ -224,6 +224,7 @@ public interface IEntity
 }
 
 // Generic repository pattern with multiple constraints
+// T : class, IEntity => T is a non-nullable reference type (no `?`) implementing IEntity
 public class Repository<T> where T : class, IEntity
 {
     private readonly List<T> _items = [];
