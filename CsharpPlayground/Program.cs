@@ -52,25 +52,32 @@ var c3 = c1 && c2;
 Console.WriteLine($"c1: {c1}, c2: {c2}, c3: {c3}");
 
 // Similar to Kotlin's "-".repeat(30)
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 ParentChildPlayground.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 NullableDemo.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
+ArrayCovariance.Run();
+
+PrintSeparator();
 ListsPlayground.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 SetsPlayground.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 RecordsPlayground.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 Default.Run();
 
-Console.WriteLine(new string('-', 30));
+PrintSeparator();
 LinqPlayground.Run();
 StaticLambdas.Run();
 ExpressionTreePlayground.Run();
+return;
+
+static void PrintSeparator() =>
+    Console.WriteLine(new string('-', 30));
