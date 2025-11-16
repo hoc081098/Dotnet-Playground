@@ -54,8 +54,8 @@ public static class DelegatesPlayground
         var isEvenFuncInferred = (int x) => x % 2 == 0; // Always inferred as Func<int, bool>
         Console.WriteLine($"isEvenPredicate(4): {isEvenPredicate(4)}, {isEvenFunc(4)}");
         Console.WriteLine($"isEvenPredicate(5): {isEvenPredicate(5)}, {isEvenFunc(5)}");
-        var eventNumbers = FilterList([1, 2, 3, 4, 5], isEvenPredicate);
-        Console.WriteLine($"Even numbers: {string.Join(", ", eventNumbers)}");
+        var evenNumbers = FilterList([1, 2, 3, 4, 5], isEvenPredicate);
+        Console.WriteLine($"Even numbers: {string.Join(", ", evenNumbers)}");
 
         Utils.PrintSeparator();
 
@@ -100,7 +100,9 @@ public static class DelegatesPlayground
         Console.WriteLine($"multiplyOp(3, 4): {multiplyOp(3, 4)}");
         Console.WriteLine($"subtractOp(3, 4): {subtractOp(3, 4)}");
         Console.WriteLine(
-            $"multicastOps(3, 4): {multicastOps(3, 4)}"); // Invokes all 3, returns last result (subtractOp)
+            $"multicastOps.GetInvocationList: {string.Join(", ", multicastOps.GetInvocationList() as IEnumerable<Delegate>)}");
+        Console.WriteLine(
+            $"multicastOps(3, 4): {multicastOps(3, 4)}"); // Print -1 because it invokes all of 3 delegates, but returns the last result (subtractOp)
 
         Utils.PrintSeparator();
 
@@ -130,6 +132,8 @@ public static class DelegatesPlayground
         // Method group conversion behavior:
 
         // Static method to delegate - returns same cached instance
+        // ReferenceEquals for static method delegates is implementation-defined by C# spec.
+        // Modern .NET runtimes usually cache static method delegates for performance.
         // Compiler caches: __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)))
         Func<int, int, int> methodGroupSum1 = SumMethod;
         // Same cached instance
@@ -164,6 +168,42 @@ public static class DelegatesPlayground
             $"different instance method: Compare by equality: {instanceMethodDelegate3.Equals(instanceMethodDelegate4)}"); // False
         Console.WriteLine(
             $"different instance method: Compare by equality: {instanceMethodDelegate3 == instanceMethodDelegate4}"); // False
+
+        Utils.PrintSeparator();
+
+        Console.WriteLine("=== Capture and Closure in Delegates ===");
+
+        // When a lambda captures a local variable, the compiler generates a closure class
+        // to hold the captured variables. The delegate instance references this closure.
+        // [CompilerGenerated]
+        // private sealed class <>c__DisplayClass2_0
+        // {
+        //   public int capturedVariable;
+        //   [...]
+        //   internal int <Run>b__16(int x)
+        //   {
+        //     return x + this.capturedVariable;
+        //   }
+        // }
+
+        // var cDisplayClass20 = new DelegatesPlayground.<>c__DisplayClass2_0();
+        var capturedVariable = 10; // cDisplayClass20.capturedVariable = 10;
+
+        // Func<int, int> addCaptured = new Func<int, int>((object) cDisplayClass20, __methodptr(<Run>b__16));
+        Func<int, int> addCaptured = x => x + capturedVariable; // Captures capturedVariable
+
+        Console.WriteLine($"addCaptured(5): {addCaptured(5)}"); // 15
+        capturedVariable = 0; // cDisplayClass20.capturedVariable = 0;
+        Console.WriteLine($"addCaptured(5) after changing capturedVariable : {addCaptured(5)}"); // 5
+
+        // Demo lambdas that doesn't capture any variables
+        Func<int, int>
+            noCaptureLambda1 = x => x * x; // compiler usually caches → likely singleton delegate per call site
+        Func<int, int>
+            noCaptureLambda2 =
+                static x => x * x; // Static lambda always cached → guaranteed singleton delegate per call site
+        noCaptureLambda1(5);
+        noCaptureLambda2(5);
 
         Console.WriteLine("✅ Delegates Playground finished successfully.");
     }
