@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace CsharpPlayground.DelegatesAndEvents;
 
 /// <summary>
@@ -12,6 +14,7 @@ namespace CsharpPlayground.DelegatesAndEvents;
 /// - Func&lt;T, TResult&gt;: delegate with return value
 /// - Predicate&lt;T&gt;: delegate that returns bool (Func&lt;T, bool&gt;)
 /// </summary>
+[SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 public static class DelegatesPlayground
 {
     delegate int MathOperation(int a, int b);
@@ -125,9 +128,12 @@ public static class DelegatesPlayground
 
         Console.WriteLine("=== Method Group Conversion to Delegate ===");
         // Method group conversion
+
         // Static method to delegate -> return same delegate instance because compiler caches it
-        Func<int, int, int> methodGroupSum1 = SumMethod; // Cache internally
-        Func<int, int, int> methodGroupSum2 = SumMethod; // Same cached instance
+        // Cache internally = __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)));
+        Func<int, int, int> methodGroupSum1 = SumMethod;
+        // Same cached instance = __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)));
+        Func<int, int, int> methodGroupSum2 = SumMethod;
         Console.WriteLine(
             $"static method: Compare by reference: {ReferenceEquals(methodGroupSum1, methodGroupSum2)}"); // True
         Console.WriteLine($"static method: Compare by equality: {methodGroupSum1.Equals(methodGroupSum2)}"); // True
@@ -136,12 +142,10 @@ public static class DelegatesPlayground
         // Once target + instance method to delegate -> return new delegate instance each time
         // but they are equal in terms of method and target (Equals and == return true)
         var target = new TargetClass();
-        Func<int, int, int>
-            instanceMethodDelegate1 =
-                target.InstanceMethod; // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
-        Func<int, int, int>
-            instanceMethodDelegate2 =
-                target.InstanceMethod; // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        Func<int, int, int> instanceMethodDelegate1 = target.InstanceMethod;
+        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        Func<int, int, int> instanceMethodDelegate2 = target.InstanceMethod;
         Console.WriteLine(
             $"instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate1, instanceMethodDelegate2)}"); // False
         Console.WriteLine(
@@ -150,14 +154,10 @@ public static class DelegatesPlayground
             $"instance method: Compare by equality: {instanceMethodDelegate1 == instanceMethodDelegate2}"); // True
 
         // Two different target + instance method to delegate -> different delegate instances -> always false
-        Func<int, int, int>
-            instanceMethodDelegate3 =
-                new TargetClass()
-                    .InstanceMethod; // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
-        Func<int, int, int>
-            instanceMethodDelegate4 =
-                new TargetClass()
-                    .InstanceMethod; // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        Func<int, int, int> instanceMethodDelegate3 = new TargetClass().InstanceMethod;
+        // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        Func<int, int, int> instanceMethodDelegate4 = new TargetClass().InstanceMethod;
         Console.WriteLine(
             $"different instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate3, instanceMethodDelegate4)}"); // False
         Console.WriteLine(
