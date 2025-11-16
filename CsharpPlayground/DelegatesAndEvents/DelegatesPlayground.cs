@@ -205,8 +205,29 @@ public static class DelegatesPlayground
         noCaptureLambda1(5);
         noCaptureLambda2(5);
 
+        Utils.PrintSeparator();
+        Console.WriteLine("=== Delegate Variance ===");
+
+        // Func<out TResult> is covariant in TResult
+        Func<Dog> dogFactory = () => new Dog("Buddy");
+        Func<IAnimal> animalFactory = dogFactory; // Covariance
+
+        // Action<in T> is contravariant in T
+        Action<IAnimal> consumeAnimal = a => Console.WriteLine(a.Name);
+        Action<Dog> consumeDog = consumeAnimal; // Contravariance
+        consumeDog(dogFactory());
+        consumeAnimal(animalFactory());
+        Console.WriteLine("variance OK");
+
         Console.WriteLine("✅ Delegates Playground finished successfully.");
     }
+
+    private interface IAnimal
+    {
+        string Name { get; }
+    };
+
+    private record Dog(string Name) : IAnimal;
 
     private record TargetClass
     {
