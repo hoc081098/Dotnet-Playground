@@ -196,7 +196,7 @@ public static class DelegatesPlayground
         capturedVariable = 0; // cDisplayClass20.capturedVariable = 0;
         Console.WriteLine($"addCaptured(5) after changing capturedVariable : {addCaptured(5)}"); // 5
 
-        // Demo lambdas that doesn't capture any variables
+        // Demo lambdas that do not capture any variables
         Func<int, int>
             noCaptureLambda1 = x => x * x; // compiler usually caches → likely singleton delegate per call site
         Func<int, int>
