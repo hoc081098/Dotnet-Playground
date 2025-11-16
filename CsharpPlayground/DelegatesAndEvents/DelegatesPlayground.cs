@@ -25,21 +25,21 @@ public static class DelegatesPlayground
     {
         Console.WriteLine("=== Built-in Delegates: Action, Func, Predicate, Comparison ===");
 
-        // Action - similar to Kotlin's (T) -> Unit
+        // Action<T> - similar to Kotlin's (T) -> Unit
         Action actionWithoutParams = () => Console.WriteLine($"Hello from actionWithoutParams!");
         Action<string> actionWithParams = name => Console.WriteLine($"Hello, {name} from actionWithParams!");
         Action<string, int> actionWithTwoParams = (name, age) =>
             Console.WriteLine($"Hello, {name}. You are {age} years old from actionWithTwoParams!");
-        actionWithoutParams(); // === actionWithoutParams.Invoke()
-        actionWithParams("Alice"); // === actionWithParams.Invoke("Alice")
-        actionWithTwoParams("Bob", 30); // === actionWithTwoParams.Invoke("Bob", 30)
+        actionWithoutParams(); // Equivalent to actionWithoutParams.Invoke()
+        actionWithParams("Alice"); // Equivalent to actionWithParams.Invoke("Alice")
+        actionWithTwoParams("Bob", 30); // Equivalent to actionWithTwoParams.Invoke("Bob", 30)
 
         Utils.PrintSeparator();
 
         // Func<T, TResult> - similar to Kotlin's (T) -> Result
         Func<int> funcWithoutParams = () => Random.Shared.Next();
         Func<int, int> squareFunc = x => x * x;
-        var squareFuncInferred = (int x) => x * x; // Type inferred by compiler:  Func<int,int>
+        var squareFuncInferred = (int x) => x * x; // Type inferred by compiler: Func<int, int>
         Func<int, int, int> sumFunc = (a, b) => a + b;
         Console.WriteLine($"funcWithoutParams(): {funcWithoutParams()}");
         Console.WriteLine($"squareFunc(5): {squareFunc(5)}");
@@ -49,9 +49,9 @@ public static class DelegatesPlayground
 
         // Predicate<T> - similar to Kotlin's (T) -> Boolean
         Predicate<int> isEvenPredicate = x => x % 2 == 0;
-        // But you can also use Func<int, bool> for the same purpose
+        // Func<int, bool> can be used for the same purpose
         Func<int, bool> isEvenFunc = x => x % 2 == 0;
-        var isEvenFuncInferred = (int x) => x % 2 == 0; // Always inferred as Func<int,bool>
+        var isEvenFuncInferred = (int x) => x % 2 == 0; // Always inferred as Func<int, bool>
         Console.WriteLine($"isEvenPredicate(4): {isEvenPredicate(4)}, {isEvenFunc(4)}");
         Console.WriteLine($"isEvenPredicate(5): {isEvenPredicate(5)}, {isEvenFunc(5)}");
         var eventNumbers = FilterList([1, 2, 3, 4, 5], isEvenPredicate);
@@ -60,13 +60,13 @@ public static class DelegatesPlayground
         Utils.PrintSeparator();
 
         // Comparison<T> - similar to Kotlin's Comparator<T>
-        Comparison<int> comparison = (a, b) => b.CompareTo(a); // Compare in descending order
+        Comparison<int> comparison = (a, b) => b.CompareTo(a); // Descending order comparison
         List<int> numbers = [5, 2, 8, 1, 4];
-        numbers.Sort(comparison); // Sort in descending order (sort in place)
+        numbers.Sort(comparison); // Sort in place using descending order
         Console.WriteLine($"Sorted numbers (descending): {string.Join(", ", numbers)}");
 
-        // Comparer<T> is a class while Comparison<T> is a delegate (function pointer)
-        // We usually use Comparison<T> inline (via lambda) for sorting.
+        // Comparer<T> is a class, while Comparison<T> is a delegate (function pointer)
+        // Typically, Comparison<T> is used inline (via lambda) for sorting
         List<int> numbers2 = [5, 2, 8, 1, 4];
         var comparer = Comparer<int>.Create(comparison);
         numbers2.Sort(comparer); // Sort in descending order using Comparer<T>
@@ -75,11 +75,11 @@ public static class DelegatesPlayground
         Utils.PrintSeparator();
 
         Console.WriteLine("=== Custom Delegate ===");
-        // Reference type
-        // Multicast delegate
-        // Có variance
-        // Có Invoke
-        // IL tạo subclass của MulticastDelegate
+        // Custom delegates are:
+        // - Reference types
+        // - Multicast delegates (can chain multiple methods)
+        // - Support covariance/contravariance
+        // - Compiled to IL as subclasses of MulticastDelegate
         MathOperation sumOp = (a, b) =>
         {
             Console.WriteLine("Invoke sumOp");
@@ -104,9 +104,9 @@ public static class DelegatesPlayground
 
         Utils.PrintSeparator();
 
-        // Demo multicast delegate for logging
-        // Under the hood, the Delegate.Combine creates a new delegate that chains the invocations (like a linked list).
-        // This is immutable; adding/removing handlers creates new delegate instances, not mutating existing ones.
+        // Multicast delegate demonstration for logging
+        // Delegate.Combine creates a new delegate that chains the invocations (like a linked list)
+        // Delegates are immutable; adding/removing handlers creates new instances rather than mutating existing ones
         LogHandler logHandler = ConsoleLog;
         logHandler += FileLog;
         logHandler("This is a log message.");
@@ -127,24 +127,24 @@ public static class DelegatesPlayground
         Utils.PrintSeparator();
 
         Console.WriteLine("=== Method Group Conversion to Delegate ===");
-        // Method group conversion
+        // Method group conversion behavior:
 
-        // Static method to delegate -> return same delegate instance because compiler caches it
-        // Cache internally = __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)));
+        // Static method to delegate - returns same cached instance
+        // Compiler caches: __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)))
         Func<int, int, int> methodGroupSum1 = SumMethod;
-        // Same cached instance = __SumMethod ?? (__SumMethod = new Func<int, int, int>((object) null, __methodptr(SumMethod)));
+        // Same cached instance
         Func<int, int, int> methodGroupSum2 = SumMethod;
         Console.WriteLine(
             $"static method: Compare by reference: {ReferenceEquals(methodGroupSum1, methodGroupSum2)}"); // True
         Console.WriteLine($"static method: Compare by equality: {methodGroupSum1.Equals(methodGroupSum2)}"); // True
         Console.WriteLine($"static method: Compare by equality: {methodGroupSum1 == methodGroupSum2}"); // True
 
-        // Once target + instance method to delegate -> return new delegate instance each time
-        // but they are equal in terms of method and target (Equals and == return true)
+        // Same target + instance method to delegate - creates new instances each time
+        // However, they are equal in terms of method and target (Equals and == return true)
         var target = new TargetClass();
-        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod))
         Func<int, int, int> instanceMethodDelegate1 = target.InstanceMethod;
-        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        // new Func<int, int, int>((object) target, __methodptr(InstanceMethod))
         Func<int, int, int> instanceMethodDelegate2 = target.InstanceMethod;
         Console.WriteLine(
             $"instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate1, instanceMethodDelegate2)}"); // False
@@ -153,10 +153,10 @@ public static class DelegatesPlayground
         Console.WriteLine(
             $"instance method: Compare by equality: {instanceMethodDelegate1 == instanceMethodDelegate2}"); // True
 
-        // Two different target + instance method to delegate -> different delegate instances -> always false
-        // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        // Different targets + instance method to delegate - different delegate instances (always false)
+        // new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod))
         Func<int, int, int> instanceMethodDelegate3 = new TargetClass().InstanceMethod;
-        // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        // new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod))
         Func<int, int, int> instanceMethodDelegate4 = new TargetClass().InstanceMethod;
         Console.WriteLine(
             $"different instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate3, instanceMethodDelegate4)}"); // False
@@ -188,7 +188,7 @@ public static class DelegatesPlayground
 
     private static List<int> FilterList(List<int> numbers, Predicate<int> predicate)
     {
-        // In reality, you would use LINQ's Where method for this.
+        // Note: In production code, use LINQ's Where method for filtering
         var result = new List<int>();
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var num in numbers)
@@ -203,10 +203,10 @@ public static class DelegatesPlayground
     }
 
     // Higher-order function example
-    private static int ReduceInts(List<int> numbers, MathOperation operation, int intialValue)
+    private static int ReduceInts(List<int> numbers, MathOperation operation, int initialValue)
     {
-        // In reality, you would use LINQ's Aggregate method for this.
-        var result = intialValue;
+        // Note: In production code, use LINQ's Aggregate method for reduction
+        var result = initialValue;
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var num in numbers)
         {
