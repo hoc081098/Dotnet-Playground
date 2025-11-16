@@ -31,7 +31,7 @@ public static class DelegatesPlayground
         actionWithParams("Alice"); // === actionWithParams.Invoke("Alice")
         actionWithTwoParams("Bob", 30); // === actionWithTwoParams.Invoke("Bob", 30)
 
-        Console.WriteLine(new string('-', 30));
+        Utils.PrintSeparator();
 
         // Func<T, TResult> - similar to Kotlin's (T) -> Result
         Func<int> funcWithoutParams = () => Random.Shared.Next();
@@ -42,7 +42,7 @@ public static class DelegatesPlayground
         Console.WriteLine($"squareFunc(5): {squareFunc(5)}");
         Console.WriteLine($"sumFunc(3, 4): {sumFunc(3, 4)}");
 
-        Console.WriteLine(new string('-', 30));
+        Utils.PrintSeparator();
 
         // Predicate<T> - similar to Kotlin's (T) -> Boolean
         Predicate<int> isEvenPredicate = x => x % 2 == 0;
@@ -54,7 +54,7 @@ public static class DelegatesPlayground
         var eventNumbers = FilterList([1, 2, 3, 4, 5], isEvenPredicate);
         Console.WriteLine($"Even numbers: {string.Join(", ", eventNumbers)}");
 
-        Console.WriteLine(new string('-', 30));
+        Utils.PrintSeparator();
 
         // Comparison<T> - similar to Kotlin's Comparator<T>
         Comparison<int> comparison = (a, b) => b.CompareTo(a); // Compare in descending order
@@ -69,7 +69,7 @@ public static class DelegatesPlayground
         numbers2.Sort(comparer); // Sort in descending order using Comparer<T>
         Console.WriteLine($"Sorted numbers using Comparer (descending): {string.Join(", ", numbers2)}");
 
-        Console.WriteLine(new string('-', 30));
+        Utils.PrintSeparator();
 
         Console.WriteLine("=== Custom Delegate ===");
         // Reference type
@@ -99,7 +99,7 @@ public static class DelegatesPlayground
         Console.WriteLine(
             $"multicastOps(3, 4): {multicastOps(3, 4)}"); // Invokes all 3, returns last result (subtractOp)
 
-        Console.WriteLine(new string('-', 30));
+        Utils.PrintSeparator();
 
         // Demo multicast delegate for logging
         // Under the hood, the Delegate.Combine creates a new delegate that chains the invocations (like a linked list).
@@ -108,8 +108,73 @@ public static class DelegatesPlayground
         logHandler += FileLog;
         logHandler("This is a log message.");
 
+        Utils.PrintSeparator();
+
+        Console.WriteLine("=== Higher-Order Functions with Delegates ===");
+        List<int> nums = [1, 2, 3, 4, 5];
+        var sum1 = ReduceInts(nums, sumOp, 0);
+        var sum2 = ReduceInts(nums, (acc, e) => acc + e, 0);
+        var product1 = ReduceInts(nums, multiplyOp, 1);
+        var product2 = ReduceInts(nums, (acc, e) => acc * e, 1);
+        Console.WriteLine($"Sum using sumOp: {sum1}");
+        Console.WriteLine($"Sum using lambda: {sum2}");
+        Console.WriteLine($"Product using multiplyOp: {product1}");
+        Console.WriteLine($"Product using lambda: {product2}");
+
+        Utils.PrintSeparator();
+
+        Console.WriteLine("=== Method Group Conversion to Delegate ===");
+        // Method group conversion
+        // Static method to delegate -> return same delegate instance because compiler caches it
+        Func<int, int, int> methodGroupSum1 = SumMethod; // Cache internally
+        Func<int, int, int> methodGroupSum2 = SumMethod; // Same cached instance
+        Console.WriteLine(
+            $"static method: Compare by reference: {ReferenceEquals(methodGroupSum1, methodGroupSum2)}"); // True
+        Console.WriteLine($"static method: Compare by equality: {methodGroupSum1.Equals(methodGroupSum2)}"); // True
+        Console.WriteLine($"static method: Compare by equality: {methodGroupSum1 == methodGroupSum2}"); // True
+
+        // Once target + instance method to delegate -> return new delegate instance each time
+        // but they are equal in terms of method and target (Equals and == return true)
+        var target = new TargetClass();
+        Func<int, int, int>
+            instanceMethodDelegate1 =
+                target.InstanceMethod; // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        Func<int, int, int>
+            instanceMethodDelegate2 =
+                target.InstanceMethod; // new Func<int, int, int>((object) target, __methodptr(InstanceMethod));
+        Console.WriteLine(
+            $"instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate1, instanceMethodDelegate2)}"); // False
+        Console.WriteLine(
+            $"instance method: Compare by equality: {instanceMethodDelegate1.Equals(instanceMethodDelegate2)}"); // True
+        Console.WriteLine(
+            $"instance method: Compare by equality: {instanceMethodDelegate1 == instanceMethodDelegate2}"); // True
+
+        // Two different target + instance method to delegate -> different delegate instances -> always false
+        Func<int, int, int>
+            instanceMethodDelegate3 =
+                new TargetClass()
+                    .InstanceMethod; // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        Func<int, int, int>
+            instanceMethodDelegate4 =
+                new TargetClass()
+                    .InstanceMethod; // = new Func<int, int, int>((object) new DelegatesPlayground.TargetClass(), __methodptr(InstanceMethod));
+        Console.WriteLine(
+            $"different instance method: Compare by reference: {ReferenceEquals(instanceMethodDelegate3, instanceMethodDelegate4)}"); // False
+        Console.WriteLine(
+            $"different instance method: Compare by equality: {instanceMethodDelegate3.Equals(instanceMethodDelegate4)}"); // False
+        Console.WriteLine(
+            $"different instance method: Compare by equality: {instanceMethodDelegate3 == instanceMethodDelegate4}"); // False
+
         Console.WriteLine("✅ Delegates Playground finished successfully.");
     }
+
+    private record TargetClass
+    {
+        public int InstanceMethod(int x, int y) => x + y;
+        public static int StaticMethod(int x, int y) => x + y;
+    }
+
+    private static int SumMethod(int arg1, int arg2) => arg1 + arg2;
 
     private static void ConsoleLog(string message)
     {
@@ -123,6 +188,7 @@ public static class DelegatesPlayground
 
     private static List<int> FilterList(List<int> numbers, Predicate<int> predicate)
     {
+        // In reality, you would use LINQ's Where method for this.
         var result = new List<int>();
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var num in numbers)
@@ -131,6 +197,20 @@ public static class DelegatesPlayground
             {
                 result.Add(num);
             }
+        }
+
+        return result;
+    }
+
+    // Higher-order function example
+    private static int ReduceInts(List<int> numbers, MathOperation operation, int intialValue)
+    {
+        // In reality, you would use LINQ's Aggregate method for this.
+        var result = intialValue;
+        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var num in numbers)
+        {
+            result = operation(result, num);
         }
 
         return result;

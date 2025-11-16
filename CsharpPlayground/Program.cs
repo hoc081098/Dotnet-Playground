@@ -79,5 +79,4 @@ StaticLambdas.Run();
 ExpressionTreePlayground.Run();
 return;
 
-static void PrintSeparator() =>
-    Console.WriteLine(new string('-', 30));
+static void PrintSeparator() => Utils.PrintSeparator();
