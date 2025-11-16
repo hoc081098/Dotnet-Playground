@@ -98,6 +98,22 @@ public class InterfacesAndGenericsPlayground
         Console.WriteLine($"Found: {foundEmployee?.Name}");
         var notFoundEmployee = employeeRepo.GetById(3);
         Console.WriteLine($"Not found: {notFoundEmployee?.Name ?? "null"}");
+
+        Utils.PrintSeparator();
+
+        // Covariance (out) - can assign derived type to base type
+        Console.WriteLine("=== Covariance (out) ===");
+        IProducer<Dog> dogProducer = new AnimalProducer<Dog>(new Dog("Producer Dog"));
+        IProducer<IAnimal> animalProducer = dogProducer; // Covariant assignment
+        animalProducer.Produce().MakeSound();
+        // out <=> child → parent: because we can use a more derived type (Dog) where a less derived type (IAnimal) is expected
+
+        // Contravariance (in) - can assign base type to derived type
+        Console.WriteLine("=== Contravariance (in) ===");
+        IConsumer<IAnimal> animalConsumer = new AnimalConsumer<IAnimal>();
+        IConsumer<Dog> dogConsumer = animalConsumer; // Contravariant assignment
+        dogConsumer.Consume(new Dog("Consumer Dog"));
+        // in <=> parent → child: because we can use a less derived type (IAnimal) where a more derived type (Dog) is expected
     }
 
     // Generic method with constraint
@@ -242,3 +258,35 @@ public class Repository<T> where T : class, IEntity
 
 // Example entity
 public record Employee(int Id, string Name) : IEntity;
+
+// ---------------------------------------------------------------------------
+
+// Covariance (out keyword) - can only be used as return type
+// Similar to Kotlin's out T
+public interface IProducer<out T>
+{
+    T Produce();
+}
+
+// Contravariance (in keyword) - can only be used as parameter type
+// Similar to Kotlin's in T
+public interface IConsumer<in T>
+{
+    void Consume(T t);
+}
+
+public class AnimalProducer<T>(T animal) : IProducer<T> where T : IAnimal
+{
+    public T Produce() => animal;
+}
+
+public class AnimalConsumer<T> : IConsumer<T> where T : IAnimal
+{
+    public void Consume(T t)
+    {
+        var animal = t;
+
+        Console.WriteLine($"Consuming animal: {animal.Name}");
+        animal.Eat("food");
+    }
+}

@@ -52,9 +52,11 @@ var c2 = Person.BoolConst;
 var c3 = c1 && c2;
 Console.WriteLine($"c1: {c1}, c2: {c2}, c3: {c3}");
 
-// Similar to Kotlin's "-".repeat(30)
 PrintSeparator();
 ParentChildPlayground.Run();
+
+PrintSeparator();
+InterfacesAndGenericsPlayground.Run();
 
 PrintSeparator();
 NullableDemo.Run();
