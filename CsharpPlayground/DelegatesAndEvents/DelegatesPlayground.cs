@@ -17,9 +17,9 @@ namespace CsharpPlayground.DelegatesAndEvents;
 [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 public static class DelegatesPlayground
 {
-    delegate int MathOperation(int a, int b);
+    private delegate int MathOperation(int a, int b);
 
-    delegate void LogHandler(string message);
+    private delegate void LogHandler(string message);
 
     public static void Run()
     {

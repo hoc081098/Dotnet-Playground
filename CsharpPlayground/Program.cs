@@ -2,6 +2,7 @@
 
 using CsharpPlayground;
 using CsharpPlayground.Collections;
+using CsharpPlayground.DelegatesAndEvents;
 using CsharpPlayground.LINQ;
 using CsharpPlayground.OOP;
 
@@ -77,6 +78,11 @@ PrintSeparator();
 LinqPlayground.Run();
 StaticLambdas.Run();
 ExpressionTreePlayground.Run();
+
+PrintSeparator();
+DelegatesPlayground.Run();
+EventsPlayground.Run();
+
 return;
 
 static void PrintSeparator() => Utils.PrintSeparator();
