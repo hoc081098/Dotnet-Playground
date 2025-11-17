@@ -18,7 +18,11 @@ public static class AsyncPlayground
     public static async Task RunAsync()
     {
         Console.WriteLine("=== Async/Await Basics ===");
+
+        Utils.PrintSeparator();
         Console.WriteLine("SynchronizationContext.Current is null: " + (SynchronizationContext.Current is null));
+        await DemoContinueWithAsync();
+        Utils.PrintSeparator();
 
         // Basic async/await - similar to Kotlin's suspend function
         var data = await GetDataAsync();
@@ -204,6 +208,87 @@ public static class AsyncPlayground
             Console.WriteLine(
                 ".Wait() caught AggregateException with InnerException of type InvalidOperationException");
         }
+    }
+
+    // Demo: Correct vs Misuse of ContinueWith
+    private static async Task DemoContinueWithAsync()
+    {
+        Console.WriteLine("=== ContinueWith Demo ===");
+
+        // GOOD USAGE: Explicit scheduler + handling errors
+        var goodTask = Task.Run<int>(() =>
+        {
+            Thread.Sleep(200);
+            throw new InvalidOperationException("kk");
+            return 123;
+        });
+
+        await goodTask.ContinueWith(
+            continuationAction: t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Console.WriteLine("GOOD: Faulted: " + t.Exception);
+                }
+                else
+                {
+                    Console.WriteLine("GOOD: Result = " + t.Result);
+                    Console.WriteLine("GOOD: Continuation thread = " + Environment.CurrentManagedThreadId);
+                }
+            },
+            cancellationToken: CancellationToken.None,
+            continuationOptions: TaskContinuationOptions.NotOnCanceled,
+            scheduler: TaskScheduler.Default
+        );
+
+        // GOOD USAGE: Explicit scheduler + handling errors
+        var goodTask2 = Task.Run<int>(() =>
+        {
+            Thread.Sleep(200);
+            return 123;
+        });
+
+        await goodTask2.ContinueWith(
+            continuationAction: t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Console.WriteLine("GOOD2: Faulted: " + t.Exception);
+                }
+                else
+                {
+                    Console.WriteLine("GOOD2: Result = " + t.Result);
+                    Console.WriteLine("GOOD2: Continuation thread = " + Environment.CurrentManagedThreadId);
+                }
+            },
+            cancellationToken: CancellationToken.None,
+            continuationOptions: TaskContinuationOptions.NotOnCanceled,
+            scheduler: TaskScheduler.Default
+        );
+
+        // MISUSE #1: UI / sync context violation (simulated — prints wrong thread)
+        var badTask1 = Task.Run(() =>
+        {
+            Thread.Sleep(100);
+            return "Hello";
+        });
+
+        await badTask1.ContinueWith(t =>
+        {
+            // Dev THINKS it's back on UI thread → but it is TaskScheduler.Current where ContinueWith is called.
+            Console.WriteLine("BAD1: Running on thread " + Environment.CurrentManagedThreadId);
+            Console.WriteLine("BAD1: IsFaulted = " + t.IsFaulted);
+        });
+
+        // MISUSE #2: Swallowing exceptions unintentionally
+        var badTask2 = Task.Run(() => throw new InvalidOperationException("Simulated error in badTask2"));
+
+        await badTask2.ContinueWith(t =>
+        {
+            // Wrong: not checking t.IsFaulted → exception silently swallowed
+            Console.WriteLine("BAD2: This should NOT be considered successful");
+            Console.WriteLine("BAD2: Status is " + t.Status);
+        });
     }
 
     // Note:
