@@ -1,0 +1,266 @@
+namespace CsharpPlayground.AsyncProgramming;
+
+/// <summary>
+/// Demonstrates async/await patterns in C#, similar to Kotlin coroutines and Java CompletableFuture.
+/// 
+/// Key differences from Kotlin:
+/// - C# uses Task and Task&lt;T&gt; (similar to Kotlin's Deferred and Java's CompletableFuture)
+/// - async/await keywords (similar to Kotlin's suspend functions)
+/// - Task.Run for background work (similar to Kotlin's launch/async with Dispatchers.IO)
+/// - ConfigureAwait(false) for library code (no direct Kotlin equivalent, related to context switching)
+/// </summary>
+public static class AsyncPlayground
+{
+    public static void Run() => RunAsync().GetAwaiter().GetResult();
+
+    public static async Task RunAsync()
+    {
+        Console.WriteLine("=== Async/Await Basics ===");
+
+        // Basic async/await - similar to Kotlin's suspend function
+        var data = await GetDataAsync();
+        Console.WriteLine($"GetDataAsync: {data}");
+
+        Utils.PrintSeparator();
+
+        // Multiple async operations in sequence
+        var data1 = await GetData1Async();
+        var data2 = await GetData2Async(data1);
+        Console.WriteLine($"GetData1Async: {data1}, GetData2Async: {data2}");
+
+        Utils.PrintSeparator();
+
+        // Task.WhenAll: Parallel execution - similar to Kotlin's async/await/awaitAll.
+        var task1 = FetchData1Async();
+        var task2 = FetchData1Async(); // Running in parallel - don't use await here
+        var results = await Task.WhenAll(task1, task2);
+        Console.WriteLine($"Parallel: task1={task1.Result}, task2={task2.Result}, results={results[0]}, {results[1]}");
+
+        Utils.PrintSeparator();
+
+        // Task.WhenAny: first completed task - similar to Kotlin's select expression or Observable.race in ReactiveX.
+
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+        var fastTask = Task.Delay(100, cancellationToken)
+            .ContinueWith(_ => "Fast", cancellationToken); // ContinueWith similar to map function
+        var slowTask = Task.Delay(2000, cancellationToken)
+            .ContinueWith(_ => "Slow", cancellationToken);
+
+        PrintStatus(fastTask, slowTask, 1);
+        var firstCompletedTask = await Task.WhenAny(fastTask, slowTask);
+        PrintStatus(fastTask, slowTask, 2);
+        await cancellationTokenSource.CancelAsync();
+        PrintStatus(fastTask, slowTask, 3);
+        var fastResult = await firstCompletedTask;
+
+        PrintStatus(fastTask, slowTask, 4);
+        Console.WriteLine($"First completed: {fastResult}");
+        Console.WriteLine($"IsFast: {ReferenceEquals(fastTask, firstCompletedTask)}, " +
+                          $"IsSlow: {ReferenceEquals(slowTask, firstCompletedTask)}");
+
+        Utils.PrintSeparator();
+
+        // Exception handling in async code
+        try
+        {
+            await ThrowExceptionAsync();
+        }
+        catch (InvalidOperationException exception)
+        {
+            Console.WriteLine($"Caught exception from async method: {exception.Message}");
+        }
+
+        Utils.PrintSeparator();
+
+        try
+        {
+            // Timeout with CancellationToken - similar to Kotlin's withTimeout
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+            await LongRunningOperationAsync(timeoutCts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Operation was cancelled due to timeout");
+        }
+
+        Utils.PrintSeparator();
+
+        try
+        {
+            // Linked CancellationTokens - similar to Kotlin's Job and withTimeout combined
+            using var manualCts = new CancellationTokenSource();
+            var manualCancellationToken = manualCts.Token;
+
+            // Manual cancellation occurs before timeout
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                manualCancellationToken,
+                new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token
+            );
+
+            // ReSharper disable once MethodSupportsCancellation
+            _ = Task.Run(() =>
+            {
+                Thread.Sleep(250);
+                CancelSilently(manualCts);
+            });
+
+            await LongRunningOperationAsync(linkedCts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Operation was cancelled due to manual cancellation");
+        }
+
+        try
+        {
+            // Linked CancellationTokens - similar to Kotlin's Job and withTimeout combined
+            using var manualCts = new CancellationTokenSource();
+            var manualCancellationToken = manualCts.Token;
+
+            // Timeout occurs before manual cancellation
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                manualCancellationToken,
+                new CancellationTokenSource(TimeSpan.FromMilliseconds(250)).Token
+            );
+
+            // ReSharper disable once MethodSupportsCancellation
+            _ = Task.Run(() =>
+            {
+                Thread.Sleep(500);
+                CancelSilently(manualCts);
+            });
+
+            await LongRunningOperationAsync(linkedCts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Operation was cancelled due to timeout");
+        }
+
+        Utils.PrintSeparator();
+
+        // Task.Run for CPU-bound work - similar to Kotlin's withContext(Dispatchers.Default)
+        Console.WriteLine("Before: current thread is " + Environment.CurrentManagedThreadId);
+        var expensiveComputationTask = Task.Run(() => ExpensiveComputation(iterations: 5_000_000));
+        var computeResult = await expensiveComputationTask;
+        Console.WriteLine($"Compute result: {computeResult}");
+
+        Utils.PrintSeparator();
+
+        // ValueTask for performance-critical scenarios
+        Console.WriteLine($"Cached result 1: {await GetCachedDataAsync(useCache: true)}");
+        Console.WriteLine($"Cached result 2: {await GetCachedDataAsync(useCache: true)}");
+        Console.WriteLine($"Cached result 3 : {await GetCachedDataAsync(useCache: true)}");
+        Console.WriteLine($"Cached result 4: {await GetCachedDataAsync(useCache: true)}");
+
+        Console.WriteLine($"Get result 5: {await GetCachedDataAsync(useCache: false)}");
+        Console.WriteLine($"Get result 6: {await GetCachedDataAsync(useCache: false)}");
+        await Task.Delay(200);
+
+        // Cannot use `await` multiple times on the same ValueTask instance.
+        // If you want to do that, convert it to Task first via .AsTask() (call .AsTask only once).
+        var nonCachedTask = GetCachedDataAsync(useCache: false).AsTask();
+        Console.WriteLine($"Get result 7: {await nonCachedTask}");
+        Console.WriteLine($"Get result 8: {await nonCachedTask}");
+        Console.WriteLine($"Get result 9: {await nonCachedTask}");
+    }
+
+    private static void CancelSilently(CancellationTokenSource manualCts)
+    {
+        try
+        {
+            manualCts.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // This 'T:System.Threading.CancellationTokenSource' has been disposed.
+        }
+        catch (AggregateException)
+        {
+            // An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated 'T:System.Threading.CancellationToken'.
+        }
+    }
+
+    private static void PrintStatus(Task<string> fastTask, Task<string> slowTask, int tag) =>
+        Console.WriteLine($"[{tag}] fastTask status: {fastTask.Status}, slowTask status: {slowTask.Status}");
+
+    // Basic async method - similar to Kotlin's suspend fun
+    private static async Task<int> GetDataAsync()
+    {
+        // Simulate asynchronous work
+        await Task.Delay(1000);
+        return 42;
+    }
+
+    private static async Task<int> GetData1Async()
+    {
+        // Simulate asynchronous work
+        await Task.Delay(1000);
+        return 200;
+    }
+
+    private static async Task<string> GetData2Async(int input)
+    {
+        // Simulate asynchronous work
+        await Task.Delay(1000);
+        return "Processed " + input;
+    }
+
+    private static async Task<int> FetchData1Async()
+    {
+        Console.WriteLine("Fetching data 1: starting...");
+        await Task.Delay(2000);
+        Console.WriteLine("Fetching data 1: completed.");
+        return 42;
+    }
+
+    private static async Task ThrowExceptionAsync()
+    {
+        await Task.Delay(10);
+        throw new InvalidOperationException("Simulated error");
+    }
+
+    private static async Task LongRunningOperationAsync(CancellationToken cancellationToken = default)
+    {
+        Console.WriteLine($"cancellationToken == none: {cancellationToken == CancellationToken.None}");
+
+        for (var i = 0; i < 10; i++)
+        {
+            Console.WriteLine("LongRunningOperationAsync: processing step " + i);
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Delay(100, cancellationToken);
+        }
+    }
+
+    // CPU-bound synchronous operation
+    private static long ExpensiveComputation(int iterations)
+    {
+        Console.WriteLine($"Task.Run thread ID: {Environment.CurrentManagedThreadId}");
+        Console.WriteLine($"Is background thread: {Thread.CurrentThread.IsBackground}");
+        Console.WriteLine($"Is thread pool thread: {Thread.CurrentThread.IsThreadPoolThread}");
+
+        long sum = 0;
+        for (var i = 0; i < iterations; i++)
+        {
+            sum += i;
+        }
+
+        return sum;
+    }
+
+    // ValueTask for optimized async operations (avoids allocation when result is already available)
+    private static ValueTask<string> GetCachedDataAsync(bool useCache)
+    {
+        return useCache
+            ? new ValueTask<string>("Cache result")
+            : new ValueTask<string>(FetchFromDatabaseAsync());
+    }
+
+    private static async Task<string> FetchFromDatabaseAsync()
+    {
+        Console.WriteLine("Fetching database result...");
+        await Task.Delay(100);
+        return "Data from database " + DateTimeOffset.Now;
+    }
+}

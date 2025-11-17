@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using CsharpPlayground;
+using CsharpPlayground.AsyncProgramming;
 using CsharpPlayground.Collections;
 using CsharpPlayground.DelegatesAndEvents;
 using CsharpPlayground.LINQ;
@@ -84,6 +85,9 @@ ExpressionTreePlayground.Run();
 PrintSeparator();
 DelegatesPlayground.Run();
 EventsPlayground.Run();
+
+PrintSeparator();
+await AsyncPlayground.RunAsync();
 
 return;
 
