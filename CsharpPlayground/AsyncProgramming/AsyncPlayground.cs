@@ -98,13 +98,14 @@ public static class AsyncPlayground
             );
 
             // ReSharper disable once MethodSupportsCancellation
-            _ = Task.Run(() =>
+            var disposeTask = Task.Run(() =>
             {
                 Thread.Sleep(250);
                 CancelSilently(manualCts);
             });
 
             await LongRunningOperationAsync(linkedCts.Token);
+            await disposeTask;
         }
         catch (OperationCanceledException)
         {
@@ -124,13 +125,14 @@ public static class AsyncPlayground
             );
 
             // ReSharper disable once MethodSupportsCancellation
-            _ = Task.Run(() =>
+            var disposeTask = Task.Run(() =>
             {
                 Thread.Sleep(500);
                 CancelSilently(manualCts);
             });
 
             await LongRunningOperationAsync(linkedCts.Token);
+            await disposeTask;
         }
         catch (OperationCanceledException)
         {
