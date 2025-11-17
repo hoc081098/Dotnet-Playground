@@ -8,6 +8,8 @@ namespace CsharpPlayground.AsyncProgramming;
 /// - async/await keywords (similar to Kotlin's suspend functions)
 /// - Task.Run for background work (similar to Kotlin's launch/async with Dispatchers.IO)
 /// - ConfigureAwait(false) for library code (no direct Kotlin equivalent, related to context switching)
+/// - Console apps have no SynchronizationContext, similar to ASP.NET Core. Continuations after `await`
+///   resume on ThreadPool threads.
 /// </summary>
 public static class AsyncPlayground
 {
@@ -16,6 +18,7 @@ public static class AsyncPlayground
     public static async Task RunAsync()
     {
         Console.WriteLine("=== Async/Await Basics ===");
+        Console.WriteLine("SynchronizationContext.Current is null: " + (SynchronizationContext.Current is null));
 
         // Basic async/await - similar to Kotlin's suspend function
         var data = await GetDataAsync();
@@ -41,11 +44,8 @@ public static class AsyncPlayground
         // Task.WhenAny: first completed task - similar to Kotlin's select expression or Observable.race in ReactiveX.
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
-        var fastTask = Task.Delay(100, cancellationToken)
-            .ContinueWith(_ => "Fast", cancellationToken); // ContinueWith similar to map function
-        var slowTask = Task.Delay(2000, cancellationToken)
-            .ContinueWith(_ => "Slow", cancellationToken);
-
+        var fastTask = DelayAndReturnAsync(100, "Fast", cancellationToken);
+        var slowTask = DelayAndReturnAsync(2000, "Slow", cancellationToken);
         PrintStatus(fastTask, slowTask, 1);
 
         var firstCompletedTask = await Task.WhenAny(fastTask, slowTask);
@@ -163,6 +163,17 @@ public static class AsyncPlayground
         Console.WriteLine($"Get result 7: {await nonCachedTask}");
         Console.WriteLine($"Get result 8: {await nonCachedTask}");
         Console.WriteLine($"Get result 9: {await nonCachedTask}");
+    }
+
+    // Note:
+    // In modern C#, prefer async/await over Task.ContinueWith for composing asynchronous operations.
+    // - ContinueWith is low-level, easy to misuse, and does not respect SynchronizationContext by default.
+    // - async/await gives clearer control flow and simpler exception handling.
+    // Here we model "do something after delay" with an async method instead of ContinueWith.
+    private static async Task<string> DelayAndReturnAsync(int delayMs, string label, CancellationToken ct = default)
+    {
+        await Task.Delay(delayMs, ct);
+        return label;
     }
 
     private static void CancelSilently(CancellationTokenSource manualCts)
