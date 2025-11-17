@@ -218,14 +218,16 @@ public static class AsyncPlayground
         // GOOD USAGE: Explicit scheduler + handling errors
         var goodTask = Task.Run<int>(() =>
         {
+            Console.WriteLine("GoodTask thread = " + Environment.CurrentManagedThreadId);
             Thread.Sleep(200);
-            throw new InvalidOperationException("kk");
+            throw new InvalidOperationException("Error in goodTask");
             return 123;
         });
 
         await goodTask.ContinueWith(
             continuationAction: t =>
             {
+                Console.WriteLine("GOOD: Continuation thread = " + Environment.CurrentManagedThreadId);
                 if (t.IsFaulted)
                 {
                     Console.WriteLine("GOOD: Faulted: " + t.Exception);
@@ -233,17 +235,19 @@ public static class AsyncPlayground
                 else
                 {
                     Console.WriteLine("GOOD: Result = " + t.Result);
-                    Console.WriteLine("GOOD: Continuation thread = " + Environment.CurrentManagedThreadId);
                 }
             },
             cancellationToken: CancellationToken.None,
-            continuationOptions: TaskContinuationOptions.NotOnCanceled,
+            continuationOptions: TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.ExecuteSynchronously,
             scheduler: TaskScheduler.Default
         );
+
+        Utils.PrintSeparator();
 
         // GOOD USAGE: Explicit scheduler + handling errors
         var goodTask2 = Task.Run<int>(() =>
         {
+            Console.WriteLine("GoodTask2 thread = " + Environment.CurrentManagedThreadId);
             Thread.Sleep(200);
             return 123;
         });
@@ -265,6 +269,8 @@ public static class AsyncPlayground
             continuationOptions: TaskContinuationOptions.NotOnCanceled,
             scheduler: TaskScheduler.Default
         );
+
+        Utils.PrintSeparator();
 
         // MISUSE #1: UI / sync context violation (simulated — prints wrong thread)
         var badTask1 = Task.Run(() =>
