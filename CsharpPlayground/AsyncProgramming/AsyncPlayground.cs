@@ -165,6 +165,45 @@ public static class AsyncPlayground
         Console.WriteLine($"Get result 7: {await nonCachedTask}");
         Console.WriteLine($"Get result 8: {await nonCachedTask}");
         Console.WriteLine($"Get result 9: {await nonCachedTask}");
+
+        Utils.PrintSeparator();
+
+        // .GetAwaiter().GetResult(), .Result and .Wait()
+
+        Console.WriteLine("GetAwaiter().GetResult(): " + GetDataAsync().GetAwaiter().GetResult());
+        Console.WriteLine("Task.Result: " + GetDataAsync().Result);
+        GetDataAsync().Wait(); // .Wait() is similar to .Result but it does not return the result
+
+        // The difference is that .GetAwaiter().GetResult() unwraps AggregateException and throws the original exception,
+        // while .Result and .Wait() wrap exceptions in AggregateException.
+        try
+        {
+            AnotherThrowExceptionAsync().GetAwaiter().GetResult();
+        }
+        catch (InvalidOperationException)
+        {
+            Console.WriteLine(".GetAwaiter().GetResult() caught InvalidOperationException");
+        }
+
+        try
+        {
+            _ = AnotherThrowExceptionAsync().Result;
+        }
+        catch (AggregateException ae) when (ae.InnerException is InvalidOperationException)
+        {
+            Console.WriteLine(
+                ".Result caught AggregateException with InnerException of type InvalidOperationException");
+        }
+
+        try
+        {
+            AnotherThrowExceptionAsync().Wait();
+        }
+        catch (AggregateException ae) when (ae.InnerException is InvalidOperationException)
+        {
+            Console.WriteLine(
+                ".Wait() caught AggregateException with InnerException of type InvalidOperationException");
+        }
     }
 
     // Note:
@@ -228,6 +267,12 @@ public static class AsyncPlayground
     }
 
     private static async Task ThrowExceptionAsync()
+    {
+        await Task.Delay(10);
+        throw new InvalidOperationException("Simulated error");
+    }
+
+    private static async Task<string> AnotherThrowExceptionAsync()
     {
         await Task.Delay(10);
         throw new InvalidOperationException("Simulated error");
