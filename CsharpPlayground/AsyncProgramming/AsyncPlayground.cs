@@ -39,7 +39,6 @@ public static class AsyncPlayground
         Utils.PrintSeparator();
 
         // Task.WhenAny: first completed task - similar to Kotlin's select expression or Observable.race in ReactiveX.
-
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
         var fastTask = Task.Delay(100, cancellationToken)
@@ -48,13 +47,13 @@ public static class AsyncPlayground
             .ContinueWith(_ => "Slow", cancellationToken);
 
         PrintStatus(fastTask, slowTask, 1);
+
         var firstCompletedTask = await Task.WhenAny(fastTask, slowTask);
         PrintStatus(fastTask, slowTask, 2);
         await cancellationTokenSource.CancelAsync();
-        PrintStatus(fastTask, slowTask, 3);
         var fastResult = await firstCompletedTask;
 
-        PrintStatus(fastTask, slowTask, 4);
+        PrintStatus(fastTask, slowTask, 3);
         Console.WriteLine($"First completed: {fastResult}");
         Console.WriteLine($"IsFast: {ReferenceEquals(fastTask, firstCompletedTask)}, " +
                           $"IsSlow: {ReferenceEquals(slowTask, firstCompletedTask)}");
