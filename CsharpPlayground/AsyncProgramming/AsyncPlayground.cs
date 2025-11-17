@@ -152,7 +152,7 @@ public static class AsyncPlayground
         // ValueTask for performance-critical scenarios
         Console.WriteLine($"Cached result 1: {await GetCachedDataAsync(useCache: true)}");
         Console.WriteLine($"Cached result 2: {await GetCachedDataAsync(useCache: true)}");
-        Console.WriteLine($"Cached result 3 : {await GetCachedDataAsync(useCache: true)}");
+        Console.WriteLine($"Cached result 3: {await GetCachedDataAsync(useCache: true)}");
         Console.WriteLine($"Cached result 4: {await GetCachedDataAsync(useCache: true)}");
 
         Console.WriteLine($"Get result 5: {await GetCachedDataAsync(useCache: false)}");
@@ -168,7 +168,7 @@ public static class AsyncPlayground
 
         Utils.PrintSeparator();
 
-        // .GetAwaiter().GetResult(), .Result and .Wait()
+        // .GetAwaiter().GetResult(), .Result and .Wait(): blocking calls to get result synchronously.
 
         Console.WriteLine("GetAwaiter().GetResult(): " + GetDataAsync().GetAwaiter().GetResult());
         Console.WriteLine("Task.Result: " + GetDataAsync().Result);
