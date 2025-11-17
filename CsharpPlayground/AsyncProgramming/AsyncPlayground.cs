@@ -168,7 +168,7 @@ public static class AsyncPlayground
 
         Utils.PrintSeparator();
 
-        // .GetAwaiter().GetResult(), .Result and .Wait()
+        // .GetAwaiter().GetResult(), .Result and .Wait(): blocking calls to get result synchronously.
 
         Console.WriteLine("GetAwaiter().GetResult(): " + GetDataAsync().GetAwaiter().GetResult());
         Console.WriteLine("Task.Result: " + GetDataAsync().Result);
