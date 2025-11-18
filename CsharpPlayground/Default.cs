@@ -19,9 +19,16 @@ public static class Default
         public int Value { get; set; }
     }
 
+
     private record struct SomeStruct()
     {
         public int Value { get; set; } = 1;
+    }
+
+
+    private record class AnotherClass
+    {
+        public SomeStruct SomeStruct;
     }
 
     private enum SomeEnum
@@ -49,8 +56,23 @@ public static class Default
         Console.WriteLine("Default of SomeStaticClass: " + default(SomeStaticClass).AsPrintable());
         Console.WriteLine("Default of SomeClass: " + default(SomeClass).AsPrintable());
         Console.WriteLine("Default of SomeStruct: " + default(SomeStruct).AsPrintable());
+        Console.WriteLine("Default of SomeStruct: " + new SomeStruct().AsPrintable());
         Console.WriteLine("Default of SomeEnum: " + default(SomeEnum).AsPrintable());
         Console.WriteLine("Default of SomeEnum (actual): " +
                           EnumExtensions.FindByValueOrThrow<SomeEnum>((int)default(SomeEnum)).AsPrintable());
+
+        Utils.PrintSeparator();
+
+        // IL_021f: ldloca.s     someStruct
+        // IL_0221: call         instance void SomeStruct::.ctor()      <-> new SomeStruct()
+        // new SomeStruct() == zero-initialization + constructor call
+        var newSomeStruct = new SomeStruct();
+
+        // IL_0226: ldloca.s     defaultOfSomeStruct
+        // IL_0228: initobj      SomeStruct                             <-> default(SomeStruct) <-> zero-initialization
+        var defaultOfSomeStruct = default(SomeStruct);
+        Console.WriteLine("new SomeStruct(): " + newSomeStruct.ToString());
+        Console.WriteLine("default(SomeStruct): " + defaultOfSomeStruct.ToString());
+        Console.WriteLine("new AnotherClass().SomeStruct is default(SomeStruct): " + new AnotherClass().SomeStruct);
     }
 }
