@@ -55,7 +55,7 @@ public static class AsyncPlayground
         var firstCompletedTask = await Task.WhenAny(fastTask, slowTask);
         PrintStatus(fastTask, slowTask, 2);
         await cancellationTokenSource.CancelAsync();
-        var fastResult = await firstCompletedTask;
+        var fastResult = firstCompletedTask.Result;
 
         PrintStatus(fastTask, slowTask, 3);
         Console.WriteLine($"First completed: {fastResult}");
@@ -72,9 +72,10 @@ public static class AsyncPlayground
         ]);
         await foreach (var task in values)
         {
-            var value = await task;
+            var value = task.Result; // Safe to use .Result as the task is already completed
             Console.WriteLine("Task.WhenEach: Received: " + value);
         }
+
         Console.WriteLine("Task.WhenEach: completed WhenEach processing");
 
         Utils.PrintSeparator();
