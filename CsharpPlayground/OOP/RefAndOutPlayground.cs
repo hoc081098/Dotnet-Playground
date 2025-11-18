@@ -123,12 +123,29 @@ public static class RefAndOutPlayground
         ref T GetElement(int index);
     }
 
-    // ref struct to wrap Span<T>
-    // - have stack-only lifetime
-    // - cannot be boxed, captured by lambda, assigned to variables of type object, dynamic, or any interface type.
-    // - cannot be used in async methods or iterator methods
-    // - can contain fields of type Span<T> or other ref structs
-    // Useful for high-performance scenarios to avoid heap allocations
+    // ref struct = a value type with stack-only lifetime restrictions.
+    // These types are used to safely represent stack-backed memory (Span<T>, ReadOnlySpan<T>, etc.).
+    //
+    // Restrictions (enforced by the compiler to prevent memory escape):
+    //   - Cannot be boxed (cannot convert to object, dynamic, or any interface type)
+    //   - Cannot be captured by lambdas, local functions, async methods, or iterators
+    //   - Cannot be a field of a class (only allowed as fields inside another ref struct)
+    //   - Cannot be used as a type argument for generic classes or methods
+    //   - Cannot be stored in arrays
+    //   - Cannot be static
+    //   - Cannot outlive the current stack frame
+    //
+    // Reason:
+    //   ref structs often contain stack-backed memory pointers. Allowing them to escape to the heap
+    //   (e.g., via boxing, async state machines, interface dispatch, or captured variables)
+    //   would lead to undefined behavior and potential memory corruption.
+    //
+    // Returning `ref T` from a ref struct member exposes a direct reference to the underlying buffer,
+    // similar to returning &array[index] in C++.
+    //
+    // Example usage:
+    //   ref var item = ref wrapper.GetElement(0);
+    //   item = 42; // writes directly into the underlying Span<T> memory
     private readonly ref struct MySpanWrapper<T>(Span<T> span) : IMySpanWrapper<T>
     {
         // Copying a Span<T> only copies the pointer + length descriptor, not the data.
