@@ -40,6 +40,13 @@ public static class RefAndOutPlayground
 
         var myStruct = new MyStruct { X = 10, Y = 20 };
         Read(myStruct);
+
+
+        var arr = new[] { 1, 2, 3, 4, 5 };
+        Console.WriteLine("First element before modification: " + arr[0]);
+        ref var r = ref First(arr); // r is a reference to arr[0], similar to pointer in C/C++
+        r = 99; // arr[0] = 99
+        Console.WriteLine("First element after modification: " + arr[0]);
     }
 
     private record struct MyStruct
@@ -68,4 +75,6 @@ public static class RefAndOutPlayground
         Console.WriteLine(myStruct.Y);
         // myStruct.X++; // 'in' parameter 'myStruct' is a read-only reference. Cannot modify struct member when accessed struct is not classified as a variable
     }
+
+    private static ref int First(int[] arr) => ref arr[0];
 }
