@@ -6,7 +6,7 @@ namespace CsharpPlayground.AsyncProgramming;
 // Posted by N73k
 // Retrieved 2025-11-17, License - CC BY-SA 3.0
 
-sealed class SingleThreadSynchronizationContext : SynchronizationContext
+internal sealed class SingleThreadSynchronizationContext : SynchronizationContext
 {
     readonly BlockingCollection<KeyValuePair<SendOrPostCallback, object?>> _queue = new();
 

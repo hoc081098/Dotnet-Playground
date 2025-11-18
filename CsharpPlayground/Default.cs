@@ -4,11 +4,6 @@ using CsharpPlayground.OOP;
 
 namespace CsharpPlayground;
 
-internal static class StringExtensions
-{
-    internal static string AsPrintable(this object? value) =>
-        value?.ToString() ?? "null";
-}
 
 public static class Default
 {
