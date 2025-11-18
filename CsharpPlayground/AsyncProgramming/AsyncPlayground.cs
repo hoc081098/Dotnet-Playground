@@ -64,6 +64,21 @@ public static class AsyncPlayground
 
         Utils.PrintSeparator();
 
+        // Task.WhenEach returns IAsyncEnumerable<Task<T>> - async pull-based sequence of tasks
+        var values = Task.WhenEach([
+            DelayAndReturnAsync(500, "First"),
+            DelayAndReturnAsync(100, "Second"),
+            DelayAndReturnAsync(700, "Third")
+        ]);
+        await foreach (var task in values)
+        {
+            var value = await task;
+            Console.WriteLine("Task.WhenEach: Received: " + value);
+        }
+        Console.WriteLine("Task.WhenEach: completed WhenEach processing");
+
+        Utils.PrintSeparator();
+
         // Exception handling in async code
         try
         {
