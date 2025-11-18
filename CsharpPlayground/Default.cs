@@ -19,9 +19,9 @@ public static class Default
         public int Value { get; set; }
     }
 
-    private record struct SomeStruct
+    private record struct SomeStruct()
     {
-        public int Value { get; set; }
+        public int Value { get; set; } = 1;
     }
 
     private enum SomeEnum
