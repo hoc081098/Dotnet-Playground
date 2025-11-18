@@ -19,16 +19,14 @@ public static class Default
         public int Value { get; set; }
     }
 
-
     private record struct SomeStruct()
     {
-        public int Value { get; set; } = 1;
+        public int Value { get; set; } = 99;
     }
 
-
-    private record class AnotherClass
+    private record AnotherClass
     {
-        public SomeStruct SomeStruct;
+        public SomeStruct SomeStruct { get; set; }
     }
 
     private enum SomeEnum
@@ -56,7 +54,6 @@ public static class Default
         Console.WriteLine("Default of SomeStaticClass: " + default(SomeStaticClass).AsPrintable());
         Console.WriteLine("Default of SomeClass: " + default(SomeClass).AsPrintable());
         Console.WriteLine("Default of SomeStruct: " + default(SomeStruct).AsPrintable());
-        Console.WriteLine("Default of SomeStruct: " + new SomeStruct().AsPrintable());
         Console.WriteLine("Default of SomeEnum: " + default(SomeEnum).AsPrintable());
         Console.WriteLine("Default of SomeEnum (actual): " +
                           EnumExtensions.FindByValueOrThrow<SomeEnum>((int)default(SomeEnum)).AsPrintable());
