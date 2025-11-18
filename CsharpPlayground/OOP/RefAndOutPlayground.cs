@@ -10,6 +10,8 @@ public static class RefAndOutPlayground
         Increment(ref number);
         Console.WriteLine($"Incremented number: {number}");
 
+        Utils.PrintSeparator();
+
         // Demo out with Dictionary.TryGetValue
         var dict = new Dictionary<string, int>()
         {
@@ -34,19 +36,56 @@ public static class RefAndOutPlayground
             Console.WriteLine("No value found associated with key '2'");
         }
 
+        Utils.PrintSeparator();
+
         // Demo out with custom method
         Write(out var meaningOfLife);
         Console.WriteLine("meaningOfLife=" + meaningOfLife);
 
+        Utils.PrintSeparator();
+
         var myStruct = new MyStruct { X = 10, Y = 20 };
         Read(myStruct);
 
+        Utils.PrintSeparator();
 
         var arr = new[] { 1, 2, 3, 4, 5 };
         Console.WriteLine("First element before modification: " + arr[0]);
         ref var r = ref First(arr); // r is a reference to arr[0], similar to pointer in C/C++
         r = 99; // arr[0] = 99
         Console.WriteLine("First element after modification: " + arr[0]);
+
+        Utils.PrintSeparator();
+
+        Span<int> intSpan = stackalloc int[10];
+        intSpan[0] = 99;
+        intSpan[1] = 100;
+        Console.WriteLine("Before intSpan[0]: " + intSpan[0]);
+        Console.WriteLine("Before intSpan[1]: " + intSpan[1]);
+
+        var wrapper = new MySpanWrapper<int>(intSpan);
+        // Write directly into stackalloc memory
+        wrapper.GetElement(0) = -99;
+
+        Console.WriteLine("After intSpan[0]: " + intSpan[0]);
+        Console.WriteLine("After intSpan[1]: " + intSpan[1]);
+
+        Utils.PrintSeparator();
+        var wrapper2 = new MySpanWrapper<int>(intSpan);
+
+        // Compile error: cannot be boxed because ref struct cannot be assigned to variables of type object
+        // var boxedWrapper2 = (object?)wrapper2; 
+
+        // Compile error: Cannot convert source type 'CsharpPlayground.OOP.RefAndOutPlayground.MySpanWrapper<int>' to target type 'CsharpPlayground.OOP.RefAndOutPlayground.IMySpanWrapper<int>'
+        // IMySpanWrapper<int> interfaceWrapper = wrapper2;
+
+        Action action = () =>
+        {
+            // Compile error: Cannot use local variable 'wrapper2' of byref-like type 'MySpanWrapper<int>' inside lambda expression
+            // wrapper2.GetElement(1) = -100;
+        };
+
+        UseMySpanWrapperSync(wrapper2);
     }
 
     private record struct MyStruct
@@ -71,10 +110,50 @@ public static class RefAndOutPlayground
     private static void Read(in MyStruct myStruct)
     {
         // in = readonly reference
-        Console.WriteLine(myStruct.X);
-        Console.WriteLine(myStruct.Y);
+        Console.WriteLine("Read: x=" + myStruct.X);
+        Console.WriteLine("Read: y=" + myStruct.Y);
         // myStruct.X++; // 'in' parameter 'myStruct' is a read-only reference. Cannot modify struct member when accessed struct is not classified as a variable
     }
 
+    // return ref
     private static ref int First(int[] arr) => ref arr[0];
+
+    private interface IMySpanWrapper<T>
+    {
+        ref T GetElement(int index);
+    }
+
+    // ref struct to wrap Span<T>
+    // - have stack-only lifetime
+    // - cannot be boxed, captured by lambda, assigned to variables of type object, dynamic, or any interface type.
+    // - cannot be used in async methods or iterator methods
+    // - can contain fields of type Span<T> or other ref structs
+    // Useful for high-performance scenarios to avoid heap allocations
+    private readonly ref struct MySpanWrapper<T>(Span<T> span) : IMySpanWrapper<T>
+    {
+        // Copying a Span<T> only copies the pointer + length descriptor, not the data.
+        private readonly Span<T> _span = span;
+
+        // Returning ref T exposes the actual element reference inside the Span<T>.
+        public ref T GetElement(int index) => ref _span[index];
+    }
+
+    // private class WrapperClasss
+    // {
+    //     // Compile error: Field cannot be of byref-like type 'System.Span<int>' unless it is an instance member of a 'ref' struct
+    //     private readonly Span<int> _span;
+    // }
+
+    private static void UseMySpanWrapperSync(MySpanWrapper<int> spanWrapper)
+    {
+        // OK to use MySpanWrapper<T> in synchronous method
+        var first = spanWrapper.GetElement(0);
+        Console.WriteLine("UseMySpanWrapperSync: first=" + first);
+    }
+
+    // Compile error: Parameters of type 'MySpanWrapper<int>' cannot be declared in async methods
+    // private static async Task UseMySpanWrapperAsync(MySpanWrapper<int> spanWrapper)
+    // {
+    //     
+    // }
 }
