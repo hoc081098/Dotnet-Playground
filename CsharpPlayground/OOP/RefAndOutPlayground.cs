@@ -45,7 +45,20 @@ public static class RefAndOutPlayground
         Utils.PrintSeparator();
 
         var myStruct = new MyStruct { X = 10, Y = 20 };
-        Read(myStruct);
+        // We can pass variable with or without `in` keyword, both produce the same IL.
+        ReadWithIn(myStruct);
+        ReadWithIn(in myStruct);
+        ReadWithIn(new MyStruct { X = 10, Y = 20 }); // `in` works with temporary values
+        // 'in' argument must be a readable variable, field, or an array element
+        // ReadWithIn(in (new MyStruct { X = 10, Y = 20 })); // `in` works with temporary values
+
+        // ref readonly parameter: we can pass variable with `in` or `ref` keyword and they produce the same IL.
+        ReadOnly(in myStruct);
+        ReadOnly(ref myStruct);
+        // 'in' argument must be a readable variable, field, or an array element
+        // ReadOnly(in (new MyStruct { X = 10, Y = 20 })); 
+        // 'ref' argument must be an assignable variable, field, or an array element
+        // ReadOnly(ref (new MyStruct { X = 10, Y = 20 })); 
 
         Utils.PrintSeparator();
 
@@ -107,12 +120,21 @@ public static class RefAndOutPlayground
         value = 42; // Meaning of life :)))
     }
 
-    private static void Read(in MyStruct myStruct)
+    // in === ref readonly parameter but also works for temporary values
+    private static void ReadWithIn(in MyStruct myStruct)
     {
         // in = readonly reference
-        Console.WriteLine("Read: x=" + myStruct.X);
-        Console.WriteLine("Read: y=" + myStruct.Y);
+        Console.WriteLine("ReadWithIn: x=" + myStruct.X);
+        Console.WriteLine("ReadWithIn: y=" + myStruct.Y);
         // myStruct.X++; // 'in' parameter 'myStruct' is a read-only reference. Cannot modify struct member when accessed struct is not classified as a variable
+    }
+
+    private static void ReadOnly(ref readonly MyStruct myStruct)
+    {
+        Console.WriteLine("ReadOnly: x=" + myStruct.X);
+        Console.WriteLine("ReadOnly: y=" + myStruct.Y);
+        // 'readonly ref' parameter 'myStruct' is a read-only reference. Cannot modify struct member when accessed struct is not classified as a variable
+        // myStruct.X++;
     }
 
     // return ref
