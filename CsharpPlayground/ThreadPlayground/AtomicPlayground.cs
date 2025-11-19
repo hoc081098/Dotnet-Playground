@@ -57,3 +57,61 @@ public static class AtomicPlayground
         }).Wait();
     }
 }
+
+public static class LockPlayground
+{
+    // When the type of the expression is precisely System.Threading.Lock,
+    // the lock statement compiles to using(x.EnterScope()).
+    // Otherwise, it uses Monitor.
+    private static readonly Lock _lock = new();
+
+    public static void Run()
+    {
+        var i = 0;
+
+        // using lock statement
+        // - with System.Threading.Lock _lock <-> using (_lock.EnterScope)
+        // - with object _lock <-> System.Threading.Monitor.Enter(_lock, ref lockTaken)
+        //                          -> finally: if (lockTaken) Monitor.Exit(_lock)
+        var t1 = Task.Run(() =>
+        {
+            lock (_lock)
+            {
+                i++;
+            }
+        });
+        var t2 = Task.Run(() =>
+        {
+            lock (_lock)
+            {
+                i++;
+            }
+        });
+
+        // using lock.Enter and lock.Exit
+        var t3 = Task.Run(() =>
+        {
+            _lock.Enter();
+            i++;
+            _lock.Exit();
+        });
+
+        // using `using (lock.EnterScope())`
+        var t4 = Task.Run(() =>
+        {
+            using (_lock.EnterScope())
+            {
+                i++;
+            }
+        });
+
+        lock (_lock)
+        {
+            i++;
+        }
+
+        // blocking until all task are completed.
+        Task.WaitAll(t1, t2, t3, t4);
+        Console.WriteLine(i); // should be 5
+    }
+}
