@@ -4,7 +4,7 @@ public static class RefAndOutPlayground
 {
     public static void Run()
     {
-        // Demo ref
+        // === Demo ref ===
         var number = 5;
         Console.WriteLine("Before incrementing: " + number);
         Increment(ref number);
@@ -12,7 +12,7 @@ public static class RefAndOutPlayground
 
         Utils.PrintSeparator();
 
-        // Demo out with Dictionary.TryGetValue
+        // === Demo out with Dictionary.TryGetValue ===
         var dict = new Dictionary<string, int>()
         {
             ["0"] = 100,
@@ -38,21 +38,21 @@ public static class RefAndOutPlayground
 
         Utils.PrintSeparator();
 
-        // Demo out with custom method
+        // === Demo out with custom method ===
         Write(out var meaningOfLife);
         Console.WriteLine("meaningOfLife=" + meaningOfLife);
 
         Utils.PrintSeparator();
 
         var myStruct = new MyStruct { X = 10, Y = 20 };
-        // We can pass variable with or without `in` keyword, both produce the same IL.
+        // === We can pass variable with or without `in` keyword, both produce the same IL. ===
         ReadWithIn(myStruct);
         ReadWithIn(in myStruct);
         ReadWithIn(new MyStruct { X = 10, Y = 20 }); // `in` works with temporary values
         // 'in' argument must be a readable variable, field, or an array element
         // ReadWithIn(in (new MyStruct { X = 10, Y = 20 })); // `in` works with temporary values
 
-        // ref readonly parameter: we can pass variable with `in` or `ref` keyword and they produce the same IL.
+        // === ref readonly parameter: we can pass variable with `in` or `ref` keyword and they produce the same IL. ===
         ReadOnly(in myStruct);
         ReadOnly(ref myStruct);
         // 'in' argument must be a readable variable, field, or an array element
@@ -60,8 +60,17 @@ public static class RefAndOutPlayground
         // 'ref' argument must be an assignable variable, field, or an array element
         // ReadOnly(ref (new MyStruct { X = 10, Y = 20 }));
 
+        // === use `ref readonly` for local var. ===
+        int[] ints = [99];
+        ref readonly var firstReadonly = ref FirstReadonly(ints);
+        ints[0] = 1998;
+        // The assignment target must be an assignable variable, property, or indexer
+        // firstReadonly = 1999;
+        Console.WriteLine("First readonly element: " + firstReadonly);
+
         Utils.PrintSeparator();
 
+        // === return ref ===
         var arr = new[] { 1, 2, 3, 4, 5 };
         Console.WriteLine("First element before modification: " + arr[0]);
         ref var r = ref First(arr); // r is a reference to arr[0], similar to pointer in C/C++
@@ -70,6 +79,7 @@ public static class RefAndOutPlayground
 
         Utils.PrintSeparator();
 
+        // === ref struct demo with Span<T> ===
         Span<int> intSpan = stackalloc int[10];
         intSpan[0] = 99;
         intSpan[1] = 100;
@@ -84,6 +94,7 @@ public static class RefAndOutPlayground
         Console.WriteLine("After intSpan[1]: " + intSpan[1]);
 
         Utils.PrintSeparator();
+
         var wrapper2 = new MySpanWrapper<int>(intSpan);
 
         // Compile error: cannot be boxed because ref struct cannot be assigned to variables of type object
@@ -139,6 +150,8 @@ public static class RefAndOutPlayground
 
     // return ref
     private static ref int First(int[] arr) => ref arr[0];
+
+    private static ref readonly int FirstReadonly(int[] arr) => ref arr[0];
 
     private interface IMySpanWrapper<T>
     {
