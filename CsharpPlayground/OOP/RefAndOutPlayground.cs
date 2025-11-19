@@ -58,7 +58,7 @@ public static class RefAndOutPlayground
         // 'in' argument must be a readable variable, field, or an array element
         // ReadOnly(in (new MyStruct { X = 10, Y = 20 })); 
         // 'ref' argument must be an assignable variable, field, or an array element
-        // ReadOnly(ref (new MyStruct { X = 10, Y = 20 })); 
+        // ReadOnly(ref (new MyStruct { X = 10, Y = 20 }));
 
         Utils.PrintSeparator();
 
