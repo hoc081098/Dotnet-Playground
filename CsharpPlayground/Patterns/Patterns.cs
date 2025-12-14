@@ -159,23 +159,67 @@ public static class Patterns
         {
             Console.WriteLine("anInt is a positive number less than 50");
         }
+
         if (anInt is 0 or 8 or 10)
         {
             Console.WriteLine("anInt must be 0 or 8 or 10");
         }
+
         if (anInt is not < 0)
         {
             Console.WriteLine("anInt is not negative");
         }
+
         if (GetObject1() is null)
         {
             Console.WriteLine("Got a null object");
         }
+
         if (GetObject1() is not null)
         {
             Console.WriteLine("Got a non-null object");
         }
-        
-        // 5. ======================== list
+
+        // 5. ======================== list pattern ========================
+        var msg1 = new[] { 1, 2 } switch
+        {
+            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
+            [0] => "just zero",
+            [] => "empty",
+            _ => "something else"
+        };
+        var msg2 = new[] { 1, 2, 3 } switch
+        {
+            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
+            [0] => "just zero",
+            [] => "empty",
+            _ => "something else"
+        };
+        var msg3 = new[] { 0 } switch
+        {
+            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
+            [0] => "just zero",
+            [] => "empty",
+            _ => "something else"
+        };
+        var msg4 = Array.Empty<int>() switch
+        {
+            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
+            [0] => "just zero",
+            [] => "empty",
+            _ => "something else"
+        };
+        var msg5 = new[] { 7, 8, 9 } switch
+        {
+            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
+            [0] => "just zero",
+            [] => "empty",
+            _ => "something else"
+        };
+        Console.WriteLine("msg:" + msg1);
+        Console.WriteLine("msg:" + msg2);
+        Console.WriteLine("msg:" + msg3);
+        Console.WriteLine("msg:" + msg4);
+        Console.WriteLine("msg:" + msg5);
     }
 }
