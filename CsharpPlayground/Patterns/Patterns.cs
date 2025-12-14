@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace CsharpPlayground.Patterns;
 
 public static class Patterns
@@ -221,5 +223,14 @@ public static class Patterns
         Console.WriteLine("msg:" + msg3);
         Console.WriteLine("msg:" + msg4);
         Console.WriteLine("msg:" + msg5);
+
+        var range = new Range(start: new Index(2, false), end: new Index(0, true));
+        var offsetAndLength = range.GetOffsetAndLength(10);
+        var (offset, length) = offsetAndLength;
+        (int first, int second) anotherTuple = (first: 10, second: 10);
+        
+        anotherTuple = offsetAndLength;
+        // => (int first, int second) is the same as (int Offset, int Length)
+        // => Why? Because C# matches tuple element names by position, not by name.
     }
 }
