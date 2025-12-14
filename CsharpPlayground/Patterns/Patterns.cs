@@ -175,5 +175,7 @@ public static class Patterns
         {
             Console.WriteLine("Got a non-null object");
         }
+        
+        // 5. ======================== list
     }
 }
