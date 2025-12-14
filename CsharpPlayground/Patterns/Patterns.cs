@@ -89,9 +89,9 @@ public static class Patterns
         };
         Console.WriteLine($"circle1: Center={circle1.Center}, Radius={circle1.Radius} and {circle1Desc}");
 
-        // 3. ======================== positional pattern ========================
+        // 4. ======================== positional pattern ========================
 
-        // 3.1. Positional pattern with Records
+        // 4.1. Positional pattern with Records
         // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
         var point1DescPositional = point1 switch
         {
@@ -108,7 +108,7 @@ public static class Patterns
         Console.WriteLine($"Point1: {point1} and {point1DescPositional}");
         Console.WriteLine($"Point2: {point2} and {point2DescPositional}");
 
-        // 3.2. Positional pattern with Tuples
+        // 4.2. Positional pattern with Tuples
         // Under the hood, the `Item1`, `Item2`, ... properties are accessed.
         var myTuple1 = (10, 20); // ValueTuple<int, int>
         var myTuple1Desc = myTuple1 switch
@@ -130,7 +130,7 @@ public static class Patterns
         Console.WriteLine($"myTuple1: {myTuple1} and {myTuple1Desc}");
         Console.WriteLine($"myTuple2: {myTuple2} and {myTuple2Desc}");
 
-        // 3.3. Positional pattern with Deconstruct method in class
+        // 4.3. Positional pattern with Deconstruct method in class
         var circle2 = new Circle
         {
             Center = new Point(0, 0),
@@ -143,5 +143,37 @@ public static class Patterns
             _ => "Some other circle",
         };
         Console.WriteLine($"circle2: Center={circle2.Center}, Radius={circle2.Radius} and {circle2Desc}");
+
+        // 5. ======================== logical pattern ========================
+        var point3 = new Point(15, 25);
+        var point3Desc = point3 switch
+        {
+            (> 0, > 0) and (< 20, < 30) => "Point is in the first quadrant within (0,0) and (20,30)",
+            (< 0, < 0) or (> 100, > 100) => "Point is either in the third quadrant or beyond (100,100)",
+            not (0, 0) => "Point is not at the origin",
+            _ => "Some other point",
+        };
+        Console.WriteLine($"Point3: {point3} and {point3Desc}");
+        var anInt = 42;
+        if (anInt is > 0 and < 50)
+        {
+            Console.WriteLine("anInt is a positive number less than 50");
+        }
+        if (anInt is 0 or 8 or 10)
+        {
+            Console.WriteLine("anInt must be 0 or 8 or 10");
+        }
+        if (anInt is not < 0)
+        {
+            Console.WriteLine("anInt is not negative");
+        }
+        if (GetObject1() is null)
+        {
+            Console.WriteLine("Got a null object");
+        }
+        if (GetObject1() is not null)
+        {
+            Console.WriteLine("Got a non-null object");
+        }
     }
 }
