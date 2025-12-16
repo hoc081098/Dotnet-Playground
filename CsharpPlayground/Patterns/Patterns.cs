@@ -214,22 +214,14 @@ public static class Patterns
     private static void DemoTypePatterns()
     {
         if (GetObject1() is string s)
-        {
             Console.WriteLine($"It's a string: {s}");
-        }
         else
-        {
             Console.WriteLine("Not a string");
-        }
 
         if (GetObject2() is int n)
-        {
             Console.WriteLine($"It's an int {n}");
-        }
         else
-        {
             Console.WriteLine("Not an int greater than 50");
-        }
 
         switch (GetObject1())
         {
@@ -265,17 +257,11 @@ public static class Patterns
         var oneOrTwoOrThree = Random.Shared.Next(1, 4); // [1, 3]
 
         if (oneOrTwoOrThree is 1)
-        {
             Console.WriteLine("It's one");
-        }
         else if (oneOrTwoOrThree is 2)
-        {
             Console.WriteLine("It's two");
-        }
         else if (oneOrTwoOrThree is 3)
-        {
             Console.WriteLine("It's three");
-        }
 
         switch (oneOrTwoOrThree)
         {
