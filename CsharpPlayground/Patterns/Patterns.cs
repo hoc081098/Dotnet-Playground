@@ -31,41 +31,13 @@ public static class Patterns
         DemoTypePatterns();
 
         // 2. ======================== constant / relational pattern ========================
-        ConstantAndRelationPatterns();
+        DemoConstantAndRelationPatterns();
 
         // 3. ======================== property pattern ========================
         var point1 = GetPoint1();
-        var point1Desc = point1 switch
-        {
-            { X: 0, Y: 0 } => "Point is at the origin",
-            { X: > 0 } => "Point is in the right half-plane",
-            _ => "Point is in the left half-plane",
-        };
-
         var point2 = GetPoint2();
-        var point2Desc = point2 switch
-        {
-            { X: 0, Y: 0 } => "Point is at the origin",
-            { Y: > 0 } => "Point is in the upper half-plane",
-            _ => "Point is in the lower half-plane",
-        };
-
-        Console.WriteLine($"Point1: {point1} and {point1Desc}");
-        Console.WriteLine($"Point2: {point2} and {point2Desc}");
-
-        var circle1 = new Circle
-        {
-            Center = new Point(0, 0),
-            Radius = 10.0,
-        };
-        var circle1Desc = circle1 switch
-        {
-            { Center: { X: 0, Y: 0 }, Radius: 10 } => "Circle is centered at origin with radius 10",
-            { Center: { X: var x, Y: > 0 }, Radius: > 10 } =>
-                $"Circle is centered at ({x}, y>0) with radius greater than 10",
-            _ => "Some other circle"
-        };
-        Console.WriteLine($"circle1: Center={circle1.Center}, Radius={circle1.Radius} and {circle1Desc}");
+        var circle = new Circle { Center = new Point(X: 2, Y: 1), Radius = 20.0 };
+        DemoPropertyPatterns(point1, point2, circle);
 
         // 4. ======================== positional pattern ========================
 
@@ -114,7 +86,7 @@ public static class Patterns
             Center = new Point(0, 0),
             Radius = 10.0
         };
-        var circle2Desc = circle1 switch
+        var circle2Desc = circle2 switch
         {
             ((0, 0), 10) => "Circle is centered at origin with radius 10",
             ((var x, > 0), > 10) => $"Circle is centered at ({x}, y>0) with radius greater than 10",
@@ -242,7 +214,7 @@ public static class Patterns
         Console.WriteLine(des);
     }
 
-    private static void ConstantAndRelationPatterns()
+    private static void DemoConstantAndRelationPatterns()
     {
         var randomNumber = Random.Shared.Next(-100, 101); // [-100, 100]
         var randomDesc = randomNumber switch
@@ -275,5 +247,35 @@ public static class Patterns
                 Console.WriteLine("It's three");
                 break;
         }
+    }
+
+    private static void DemoPropertyPatterns(Point point1, Point point2, Circle circle)
+    {
+        var point1Desc = point1 switch
+        {
+            { X: 0, Y: 0 } => "Point is at the origin",
+            { X: > 0 } => "Point is in the right half-plane",
+            { X: < 0 } => "Point is in the left half-plane",
+            _ => "Point lies on the Y axis"
+        };
+        var point2Desc = point2 switch
+        {
+            { X: 0, Y: 0 } => "Point is at the origin",
+            { Y: > 0 } => "Point is in the upper half-plane",
+            { Y: < 0 } => "Point is in the lower half-plane",
+            _ => "Point lies on the X axis"
+        };
+        Console.WriteLine($"Point1: {point1} => {point1Desc}");
+        Console.WriteLine($"Point2: {point2} => {point2Desc}");
+
+        var circleDesc = circle switch
+        {
+            { Center: { X: 0, Y: 0 }, Radius: 10 } =>
+                "Circle is centered at origin with radius 10",
+            { Center: { X: var x, Y: > 0 and var y }, Radius: > 10 } when x > y =>
+                $"Circle is centered at ({x}, {y}) with radius greater than 10 and x > y > 0",
+            _ => "Some other circle"
+        };
+        Console.WriteLine($"circle: Center={circle.Center}, Radius={circle.Radius} => {circleDesc}");
     }
 }
