@@ -28,18 +28,10 @@ public static class Patterns
     public static void Run()
     {
         // 1. ======================== type pattern ========================
-        DemoTypePattern();
+        DemoTypePatterns();
 
         // 2. ======================== constant / relational pattern ========================
-        var random = Random.Shared.Next(-100, 101); // [-100, 100]
-        var randomDesc = random switch
-        {
-            0 => "Zero",
-            < 0 => "Negative number",
-            <= 50 => "Positive number less than or equal to 50",
-            _ => "Positive number greater than 50",
-        };
-        Console.WriteLine($"Random number {random} is described as: {randomDesc}");
+        ConstantAndRelationPatterns();
 
         // 3. ======================== property pattern ========================
         var point1 = GetPoint1();
@@ -219,7 +211,7 @@ public static class Patterns
         // Tuple element names in C# are just "labels", not "type identifiers"
     }
 
-    private static void DemoTypePattern()
+    private static void DemoTypePatterns()
     {
         if (GetObject1() is string s)
         {
@@ -256,5 +248,46 @@ public static class Patterns
             _ => "[switch expression] Unknown type"
         };
         Console.WriteLine(des);
+    }
+
+    private static void ConstantAndRelationPatterns()
+    {
+        var randomNumber = Random.Shared.Next(-100, 101); // [-100, 100]
+        var randomDesc = randomNumber switch
+        {
+            0 => "Zero",
+            < 0 => "Negative number",
+            <= 50 => "Positive number less than or equal to 50",
+            _ => "Positive number greater than 50",
+        };
+        Console.WriteLine($"Random number {randomNumber} is described as: {randomDesc}");
+
+        var oneOrTwoOrThree = Random.Shared.Next(1, 4); // [1, 3]
+
+        if (oneOrTwoOrThree is 1)
+        {
+            Console.WriteLine("It's one");
+        }
+        else if (oneOrTwoOrThree is 2)
+        {
+            Console.WriteLine("It's two");
+        }
+        else if (oneOrTwoOrThree is 3)
+        {
+            Console.WriteLine("It's three");
+        }
+
+        switch (oneOrTwoOrThree)
+        {
+            case 1:
+                Console.WriteLine("It's one");
+                break;
+            case 2:
+                Console.WriteLine("It's two");
+                break;
+            case 3:
+                Console.WriteLine("It's three");
+                break;
+        }
     }
 }
