@@ -28,12 +28,39 @@ public static class Patterns
     public static void Run()
     {
         // 1. ======================== type pattern ========================
+        // [part 1] C# type patterns with 'is' (C# 7.0+).
+        // In C#, the is operator is used with type patterns to check if the runtime type of an expression
+        // is compatible with a given type and, optionally, to declare a new variable of that type.
+        // This feature, introduced in C# 7.0 and enhanced in later versions, provides a more concise way
+        // to perform type checking and conditional variable assignment.
         DemoTypePatterns();
 
         // 2. ======================== constant / relational pattern ========================
+        // [part 2] C# constant and relational patterns
+        // In C#, constant and relational patterns are features of pattern matching used to test if an input value
+        // matches a specific constant value or falls within a certain range or comparison condition. 
+        //
+        // # Constant Patterns
+        // A constant pattern tests an input expression against a constant value.
+        // This is a simple form of pattern matching and essentially behaves like an equality check (==). 
+        // You can use constant patterns with the is operator, in switch statements, and switch expressions. 
+        //
+        // # Relational Patterns
+        // Relational patterns allow you to compare an input expression to a constant value using relational operators,
+        // such as <, >, <=, and >=. This feature was introduced in C# 9.0.
         DemoConstantAndRelationPatterns();
 
         // 3. ======================== property pattern ========================
+        // [part 3] C# property patterns
+        // C# property patterns are a pattern matching feature that allows you to match an object based on the values of its properties or fields.
+        // Introduced in C# 8.0 and enhanced in subsequent versions, they provide a concise, readable way to inspect complex data structures and simplify nested conditional logic. 
+        //
+        // A property pattern tests whether an expression is non-null and whether its specified properties or fields match nested patterns.
+        // This eliminates the need for explicit null checks and multiple, nested if statements, transforming imperative code into a more declarative style.
+        // Property patterns can be used in is expressions, switch statements, and switch expressions. 
+        // You define property patterns using curly braces {} after the type or variable name, followed by the properties you want to check.
+        //
+        // C# 10 introduced extended property patterns, which allow you to reference nested properties directly using a dot notation, making patterns even cleaner.
         var point1 = GetPoint1();
         var point2 = GetPoint2();
         var circle = new Circle { Center = new Point(X: 2, Y: 1), Radius = 20.0 };
@@ -277,5 +304,15 @@ public static class Patterns
             _ => "Some other circle"
         };
         Console.WriteLine($"circle: Center={circle.Center}, Radius={circle.Radius} => {circleDesc}");
+
+        // C# 10 introduced extended property patterns, which allow you to reference nested properties directly using a dot notation,
+        // making patterns even cleaner.
+        var extendedPropertyPattern = circle switch
+        {
+            { Center.X: > 0 } => "Circle.Center.X is positive",
+            { Center.X: < 0 } => "Circle.Center.X is negative",
+            _ => "Circle.Center.X is zero"
+        };
+        Console.WriteLine(extendedPropertyPattern);
     }
 }
