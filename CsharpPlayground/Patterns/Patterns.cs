@@ -28,23 +28,7 @@ public static class Patterns
     public static void Run()
     {
         // 1. ======================== type pattern ========================
-        if (GetObject1() is string s)
-        {
-            Console.WriteLine($"It's a string: {s}");
-        }
-        else
-        {
-            Console.WriteLine("Not a string");
-        }
-
-        if (GetObject2() is int n)
-        {
-            Console.WriteLine($"It's an int {n}");
-        }
-        else
-        {
-            Console.WriteLine("Not an int greater than 50");
-        }
+        DemoTypePattern();
 
         // 2. ======================== constant / relational pattern ========================
         var random = Random.Shared.Next(-100, 101); // [-100, 100]
@@ -228,10 +212,49 @@ public static class Patterns
         var offsetAndLength = range.GetOffsetAndLength(10);
         var (offset, length) = offsetAndLength;
         (int first, int second) anotherTuple = (first: 10, second: 10);
-        
+
         anotherTuple = offsetAndLength;
         // => (int first, int second) is the same as (int Offset, int Length)
         // => Why? Because C# matches tuple element names by position, not by name.
         // Tuple element names in C# are just "labels", not "type identifiers"
+    }
+
+    private static void DemoTypePattern()
+    {
+        if (GetObject1() is string s)
+        {
+            Console.WriteLine($"It's a string: {s}");
+        }
+        else
+        {
+            Console.WriteLine("Not a string");
+        }
+
+        if (GetObject2() is int n)
+        {
+            Console.WriteLine($"It's an int {n}");
+        }
+        else
+        {
+            Console.WriteLine("Not an int greater than 50");
+        }
+
+        switch (GetObject1())
+        {
+            case string s1:
+                Console.WriteLine($"[switch] It's a string: {s1}");
+                break;
+            case int n1:
+                Console.WriteLine($"[switch] It's an int: {n1}");
+                break;
+        }
+
+        var des = GetObject1() switch
+        {
+            string s2 => $"[switch expression] It's a string: {s2}",
+            int n2 => $"[switch expression] It's an int: {n2}",
+            _ => "[switch expression] Unknown type"
+        };
+        Console.WriteLine(des);
     }
 }
