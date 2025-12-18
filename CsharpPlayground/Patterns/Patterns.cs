@@ -17,6 +17,22 @@ public static class Patterns
         }
     }
 
+    private enum Direction
+    {
+        Up,
+        Down,
+        Left,
+        Right,
+    }
+
+    private static string Describe(Direction d) => d switch
+    {
+        Direction.Up => "↑",
+        Direction.Down => "↓",
+        Direction.Left => "←",
+        Direction.Right => "→"
+    };
+
     private static object? GetObject1() => "Hello world";
     private static object? GetObject2() => 1998;
 
@@ -110,6 +126,7 @@ public static class Patterns
         // Tuple element names in C# are just "labels", not "type identifiers"
 
         DemoVarPattern();
+        DemoSwitchExpressionWithEnums();
     }
 
     private static void DemoTypePatterns()
@@ -216,6 +233,14 @@ public static class Patterns
             _ => "Circle.Center.X is zero"
         };
         Console.WriteLine(extendedPropertyPattern);
+
+        // Using _ to ignore certain properties
+        var ignoreSomeProperties = point1 switch
+        {
+            { X: _, Y: > 0 } => "point1.Y is positive",
+            { X: _, Y: < 0 } => "point1.Y is negative",
+            _ => "point1.Y is zero"
+        };
     }
 
     private static void DemoPositionalPatternsWithRecords(Point point1, Point point2)
@@ -378,5 +403,21 @@ public static class Patterns
             var x => $"Some other object: {x}"
         };
         Console.WriteLine(desc2);
+    }
+
+    private static void DemoSwitchExpressionWithEnums()
+    {
+        var directions = new[] { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
+        foreach (var dir in directions)
+            Console.WriteLine(Describe(dir));
+
+        try
+        {
+            Describe((Direction)100);
+        }
+        catch (System.Runtime.CompilerServices.SwitchExpressionException ex)
+        {
+            Console.WriteLine($"Caught exception: {ex.Message}");
+        }
     }
 }
