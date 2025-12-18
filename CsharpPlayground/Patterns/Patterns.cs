@@ -108,6 +108,8 @@ public static class Patterns
         // => (int first, int second) is the same as (int Offset, int Length)
         // => Why? Because C# matches tuple element names by position, not by name.
         // Tuple element names in C# are just "labels", not "type identifiers"
+
+        DemoVarPattern();
     }
 
     private static void DemoTypePatterns()
@@ -352,5 +354,18 @@ public static class Patterns
                 [] => "empty",
                 _ => "something else"
             };
+    }
+
+    private static void DemoVarPattern()
+    {
+        object obj = 42;
+
+        var desc = obj switch
+        {
+            // Var pattern: always matches any value and captures it into a new variable
+            var x => $"var pattern: {x}"
+        };
+
+        Console.WriteLine(desc);
     }
 }
