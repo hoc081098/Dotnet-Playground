@@ -33,6 +33,9 @@ public static class Patterns
         Direction.Right => "→"
     };
 
+    // NOTE: (int X, int Y) is a ValueTuple<int, int> not pattern
+    private static string Describe((int X, int Y) p) => p.X == p.Y ? "Diagonal" : "Not diagonal";
+
     private static object? GetObject1() => "Hello world";
     private static object? GetObject2() => 1998;
 
