@@ -80,30 +80,10 @@ public static class Patterns
         // accessible Deconstruct method.
 
         // 4.1. Positional pattern with Records
-        // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
         DemoPositionalPatternsWithRecords(point1, point2);
 
         // 4.2. Positional pattern with Tuples
-        // Under the hood, the `Item1`, `Item2`, ... properties are accessed.
-        var myTuple1 = (10, 20); // ValueTuple<int, int>
-        var myTuple1Desc = myTuple1 switch
-        {
-            (0, 0) => "Both elements are zero",
-            (> 0, _) => "First element is positive",
-            _ => "First element is non-positive",
-        };
-
-        // ValueTuple<int, int, int, int, int, int, int, ValueTuple<int, int>>
-        var myTuple2 = (1, 2, 3, 4, 5, 6, 7, 8, 9);
-        var myTuple2Desc = myTuple2 switch
-        {
-            (0, 0, 0, 0, 0, 0, 0, 0, 0) => "All elements are zero",
-            (> 0, _, _, _, _, _, _, _, _) => "First element is positive",
-            _ => "First element is non-positive",
-        };
-
-        Console.WriteLine($"myTuple1: {myTuple1} and {myTuple1Desc}");
-        Console.WriteLine($"myTuple2: {myTuple2} and {myTuple2Desc}");
+        DemoPositionalPatternsWithValueTuples();
 
         // 4.3. Positional pattern with Deconstruct method in class
         var circle2 = new Circle
@@ -207,7 +187,6 @@ public static class Patterns
         // => Why? Because C# matches tuple element names by position, not by name.
         // Tuple element names in C# are just "labels", not "type identifiers"
     }
-
 
     private static void DemoTypePatterns()
     {
@@ -318,9 +297,10 @@ public static class Patterns
     private static void DemoPositionalPatternsWithRecords(Point point1, Point point2)
     {
         // 4.1. Positional pattern with Records
+        // Under the hood, the `Deconstruct` method is called: `point1.Deconstruct(out X, out Y)`.
+        //
         // Synthesized `Deconstruct` Method: When you define a record with positional parameters (e.g., record Point(int X, int Y)),
         // the compiler synthesizes a public void `Deconstruct` method.
-        // Under the hood, the `Deconstruct` method is called: `point1.Deconstruct(out X, out Y)`
 
         var point1DescPositional = point1 switch
         {
@@ -338,5 +318,33 @@ public static class Patterns
 
         Console.WriteLine($"Point1: {point1} and {point1DescPositional}");
         Console.WriteLine($"Point2: {point2} and {point2DescPositional}");
+    }
+
+    private static void DemoPositionalPatternsWithValueTuples()
+    {
+        // 4.2. Positional pattern with Tuples
+        // Under the hood, the `Item1`, `Item2`, ... properties are accessed.
+        //
+        // In C#, a positional pattern for a tuple accesses the underlying Item1, Item2, etc., properties automatically.
+        // This pattern allows for deconstructing the tuple based on its position.
+
+        var myTuple1 = (10, 20); // ValueTuple<int, int> myTuple1;
+        var myTuple1Desc = myTuple1 switch
+        {
+            (0, 0) => "Both elements are zero",
+            (> 0, _) => "First element is positive",
+            _ => "First element is non-positive",
+        };
+
+        // ValueTuple<int, int, int, int, int, int, int, ValueTuple<int, int>> myTuple2;
+        var myTuple2 = (1, 2, 3, 4, 5, 6, 7, 8, 9);
+        var myTuple2Desc = myTuple2 switch
+        {
+            (0, 0, 0, 0, 0, 0, 0, 0, 0) => "All elements are zero",
+            (> 0, _, _, _, _, _, _, _, _) => "First element is positive",
+            _ => "First element is non-positive",
+        };
+        Console.WriteLine($"myTuple1: {myTuple1} and {myTuple1Desc}");
+        Console.WriteLine($"myTuple2: {myTuple2} and {myTuple2Desc}");
     }
 }
