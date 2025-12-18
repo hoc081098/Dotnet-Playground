@@ -95,47 +95,9 @@ public static class Patterns
         // 5. ======================== logical pattern ========================
         DemoLogicalPatterns();
 
-        // 5. ======================== list pattern ========================
-        var msg1 = new[] { 1, 2 } switch
-        {
-            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
-            [0] => "just zero",
-            [] => "empty",
-            _ => "something else"
-        };
-        var msg2 = new[] { 1, 2, 3 } switch
-        {
-            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
-            [0] => "just zero",
-            [] => "empty",
-            _ => "something else"
-        };
-        var msg3 = new[] { 0 } switch
-        {
-            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
-            [0] => "just zero",
-            [] => "empty",
-            _ => "something else"
-        };
-        var msg4 = Array.Empty<int>() switch
-        {
-            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
-            [0] => "just zero",
-            [] => "empty",
-            _ => "something else"
-        };
-        var msg5 = new[] { 7, 8, 9 } switch
-        {
-            [1, 2, .. var rest] => $"starts with 1,2 and {rest.Length} more",
-            [0] => "just zero",
-            [] => "empty",
-            _ => "something else"
-        };
-        Console.WriteLine("msg:" + msg1);
-        Console.WriteLine("msg:" + msg2);
-        Console.WriteLine("msg:" + msg3);
-        Console.WriteLine("msg:" + msg4);
-        Console.WriteLine("msg:" + msg5);
+        // 6. ======================== list pattern ========================
+        // 6. List patterns
+        DemoListPatterns();
 
         var range = new Range(start: new Index(2, false), end: new Index(0, true));
         var offsetAndLength = range.GetOffsetAndLength(10);
@@ -357,5 +319,38 @@ public static class Patterns
         if (anInt is not < 0) Console.WriteLine("anInt is not negative");
         if (anInt is not (3 or 4)) Console.WriteLine("anInt is neither 3 nor 4");
         if (GetObject1() is not null) Console.WriteLine("Got a non-null object");
+    }
+
+    private static void DemoListPatterns()
+    {
+        // 6. List patterns
+        // C# list patterns, introduced in C# 11, enable concise and readable pattern matching
+        // against the sequence and elements of arrays, Span<T>, and ReadOnlySpan<T> collections.
+        // They replace complex for loops or if-else statements for structural checks.
+        //
+        // - Discard: `_` matches any single element without checking its value.
+        // - Range (Slice): `..` matches a sequence of zero or more elements. It can only appear once in a pattern.
+        // - Var: `var x` captures the matched element(s) into a new variable `x`.
+
+        var msg1 = GetListDescription([1, 2]);
+        var msg2 = GetListDescription([1, 2, 3]);
+        var msg3 = GetListDescription([0]);
+        var msg4 = GetListDescription([5, 9]);
+        var msg5 = GetListDescription([]);
+        var msg6 = GetListDescription([7, 8, 9]);
+
+        foreach (var m in new[] { msg1, msg2, msg3, msg4, msg5, msg6 })
+            Console.WriteLine(m);
+        return;
+
+        static string GetListDescription(List<int> ints) =>
+            ints switch
+            {
+                [1, 2, .. var rest] => $"starts with 1,2 and {rest.Count} more",
+                [0] => "just zero",
+                [5, var x] => $"starts with 5 and then {x}",
+                [] => "empty",
+                _ => "something else"
+            };
     }
 }
