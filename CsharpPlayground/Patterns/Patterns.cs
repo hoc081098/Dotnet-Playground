@@ -70,20 +70,7 @@ public static class Patterns
 
         // 4.1. Positional pattern with Records
         // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
-        var point1DescPositional = point1 switch
-        {
-            (0, 0) => "Point is at the origin",
-            (> 0, _) => "Point is in the right half-plane",
-            _ => "Point is in the left half-plane",
-        };
-        var point2DescPositional = point2 switch
-        {
-            (0, 0) => "Point is at the origin",
-            (_, > 0) => "Point is in the upper half-plane",
-            _ => "Point is in the lower half-plane",
-        };
-        Console.WriteLine($"Point1: {point1} and {point1DescPositional}");
-        Console.WriteLine($"Point2: {point2} and {point2DescPositional}");
+        DemoPositionalPatternsWithRecords(point1, point2);
 
         // 4.2. Positional pattern with Tuples
         // Under the hood, the `Item1`, `Item2`, ... properties are accessed.
@@ -210,6 +197,7 @@ public static class Patterns
         // Tuple element names in C# are just "labels", not "type identifiers"
     }
 
+
     private static void DemoTypePatterns()
     {
         if (GetObject1() is string s)
@@ -314,5 +302,28 @@ public static class Patterns
             _ => "Circle.Center.X is zero"
         };
         Console.WriteLine(extendedPropertyPattern);
+    }
+
+    private static void DemoPositionalPatternsWithRecords(Point point1, Point point2)
+    {
+        // 4.1. Positional pattern with Records
+        // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
+    
+        var point1DescPositional = point1 switch
+        {
+            (0, 0) => "Point is at the origin",
+            (> 0, _) => "Point is in the right half-plane",
+            _ => "Point is in the left half-plane",
+        };
+        
+        var point2DescPositional = point2 switch
+        {
+            (0, 0) => "Point is at the origin",
+            (_, > 0) => "Point is in the upper half-plane",
+            _ => "Point is in the lower half-plane",
+        };
+        
+        Console.WriteLine($"Point1: {point1} and {point1DescPositional}");
+        Console.WriteLine($"Point2: {point2} and {point2DescPositional}");
     }
 }
