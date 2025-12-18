@@ -409,15 +409,23 @@ public static class Patterns
     {
         var directions = new[] { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
         foreach (var dir in directions)
+        {
             Console.WriteLine(Describe(dir));
+        }
 
+        Direction invalidDirection = (Direction)100;
         try
         {
-            Describe((Direction)100);
+            Describe(invalidDirection);
         }
         catch (System.Runtime.CompilerServices.SwitchExpressionException ex)
         {
             Console.WriteLine($"Caught exception: {ex.Message}");
         }
+
+        Console.WriteLine(
+            Enum.IsDefined(invalidDirection)
+                ? Describe(invalidDirection)
+                : $"Invalid direction: {invalidDirection}");
     }
 }
