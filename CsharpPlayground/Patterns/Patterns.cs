@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace CsharpPlayground.Patterns;
 
 public static class Patterns
@@ -27,6 +25,12 @@ public static class Patterns
 
     public static void Run()
     {
+        // Null check pattern
+        if (GetObject1() is null)
+        {
+            Console.WriteLine("Got a null object");
+        }
+
         // 1. ======================== type pattern ========================
         // [part 1] C# type patterns with 'is' (C# 7.0+).
         // In C#, the is operator is used with type patterns to check if the runtime type of an expression
@@ -89,40 +93,7 @@ public static class Patterns
         DemoPositionalPatternsWithUserdefinedDeconstruct();
 
         // 5. ======================== logical pattern ========================
-        var point3 = new Point(15, 25);
-        var point3Desc = point3 switch
-        {
-            (> 0, > 0) and (< 20, < 30) => "Point is in the first quadrant within (0,0) and (20,30)",
-            (< 0, < 0) or (> 100, > 100) => "Point is either in the third quadrant or beyond (100,100)",
-            not (0, 0) => "Point is not at the origin",
-            _ => "Some other point",
-        };
-        Console.WriteLine($"Point3: {point3} and {point3Desc}");
-        var anInt = 42;
-        if (anInt is > 0 and < 50)
-        {
-            Console.WriteLine("anInt is a positive number less than 50");
-        }
-
-        if (anInt is 0 or 8 or 10)
-        {
-            Console.WriteLine("anInt must be 0 or 8 or 10");
-        }
-
-        if (anInt is not < 0)
-        {
-            Console.WriteLine("anInt is not negative");
-        }
-
-        if (GetObject1() is null)
-        {
-            Console.WriteLine("Got a null object");
-        }
-
-        if (GetObject1() is not null)
-        {
-            Console.WriteLine("Got a non-null object");
-        }
+        DemoLogicalPatterns();
 
         // 5. ======================== list pattern ========================
         var msg1 = new[] { 1, 2 } switch
@@ -176,7 +147,6 @@ public static class Patterns
         // => Why? Because C# matches tuple element names by position, not by name.
         // Tuple element names in C# are just "labels", not "type identifiers"
     }
-
 
     private static void DemoTypePatterns()
     {
@@ -357,5 +327,52 @@ public static class Patterns
             _ => "Some other circle",
         };
         Console.WriteLine($"circle2: Center={circle2.Center}, Radius={circle2.Radius} and {circle2Desc}");
+    }
+
+    private static void DemoLogicalPatterns()
+    {
+        // 5. Logical pattern: and, or, not
+        // C# offers logical patterns (and, or, and not) to combine multiple patterns within
+        // is expressions and switch statements/expressions, allowing for more complex and readable conditional logic. 
+        // These patterns were introduced in C# 9.0 to complement existing pattern matching features. 
+
+        var point3 = new Point(15, 25);
+        var point3Desc = point3 switch
+        {
+            (> 0, > 0) and (< 20, < 30) => "Point is in the first quadrant within (0,0) and (20,30)",
+            (< 0, < 0) or (> 100, > 100) => "Point is either in the third quadrant or beyond (100,100)",
+            not (0, 0) => "Point is not at the origin",
+            _ => "Some other point",
+        };
+        Console.WriteLine($"Point3: {point3} and {point3Desc}");
+        var anInt = Random.Shared.Next(-100, 101); // [-100, 100]
+
+        // Using 'and' pattern to check if value is within a range
+        if (anInt is > 0 and < 50)
+        {
+            Console.WriteLine("anInt is a positive number less than 50");
+        }
+
+        // Using 'or' pattern to check for multiple specific values
+        if (anInt is 0 or 8 or 10)
+        {
+            Console.WriteLine("anInt must be 0 or 8 or 10");
+        }
+
+        // Using 'not' pattern to check for non-negative values
+        if (anInt is not < 0)
+        {
+            Console.WriteLine("anInt is not negative");
+        }
+
+        if (anInt is not (3 or 4))
+        {
+            Console.WriteLine("anInt is neither 3 nor 4");
+        }
+
+        if (GetObject1() is not null)
+        {
+            Console.WriteLine("Got a non-null object");
+        }
     }
 }
