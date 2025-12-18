@@ -67,6 +67,17 @@ public static class Patterns
         DemoPropertyPatterns(point1, point2, circle);
 
         // 4. ======================== positional pattern ========================
+        // Positional patterns were introduced in C# 8.0 as a pattern matching enhancement
+        // that allows deconstructing an object to match against its components.
+        //
+        // The `Deconstruct` method is central to how positional patterns work.
+        // When a positional pattern is used in your code, the compiler translates it into a call to the corresponding `Deconstruct` method.
+        // This method takes out parameters to unpack the object's properties into separate variables, which are then used for the pattern matching comparison.
+        //
+        // For example, when you have a line of code like if (point1 is (var X, var Y)),
+        // the compiler effectively generates the underlying call to the `Deconstruct` method: `point1.Deconstruct(out X, out Y)`.
+        // This mechanism means that any class or struct you define can support positional patterns simply by providing a suitable,
+        // accessible Deconstruct method.
 
         // 4.1. Positional pattern with Records
         // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
@@ -307,22 +318,24 @@ public static class Patterns
     private static void DemoPositionalPatternsWithRecords(Point point1, Point point2)
     {
         // 4.1. Positional pattern with Records
-        // Under the hood, the `Deconstruct` method is called: point1.Deconstruct(out X, out Y)
-    
+        // Synthesized `Deconstruct` Method: When you define a record with positional parameters (e.g., record Point(int X, int Y)),
+        // the compiler synthesizes a public void `Deconstruct` method.
+        // Under the hood, the `Deconstruct` method is called: `point1.Deconstruct(out X, out Y)`
+
         var point1DescPositional = point1 switch
         {
             (0, 0) => "Point is at the origin",
             (> 0, _) => "Point is in the right half-plane",
             _ => "Point is in the left half-plane",
         };
-        
+
         var point2DescPositional = point2 switch
         {
             (0, 0) => "Point is at the origin",
             (_, > 0) => "Point is in the upper half-plane",
             _ => "Point is in the lower half-plane",
         };
-        
+
         Console.WriteLine($"Point1: {point1} and {point1DescPositional}");
         Console.WriteLine($"Point2: {point2} and {point2DescPositional}");
     }
