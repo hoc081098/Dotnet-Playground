@@ -365,7 +365,18 @@ public static class Patterns
             // Var pattern: always matches any value and captures it into a new variable
             var x => $"var pattern: {x}"
         };
-
         Console.WriteLine(desc);
+
+        var desc2 = obj switch
+        {
+            // The code below also uses var pattern for demonstration,
+            // but it's not the best practice since it always matches any value.
+            // <=> var x and int
+            // <=> int x
+            // Better pattern: int x
+            var x when x is int => $"It's an int: {x}",
+            var x => $"Some other object: {x}"
+        };
+        Console.WriteLine(desc2);
     }
 }
