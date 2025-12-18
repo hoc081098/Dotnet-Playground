@@ -85,19 +85,8 @@ public static class Patterns
         // 4.2. Positional pattern with Tuples
         DemoPositionalPatternsWithValueTuples();
 
-        // 4.3. Positional pattern with Deconstruct method in class
-        var circle2 = new Circle
-        {
-            Center = new Point(0, 0),
-            Radius = 10.0
-        };
-        var circle2Desc = circle2 switch
-        {
-            ((0, 0), 10) => "Circle is centered at origin with radius 10",
-            ((var x, > 0), > 10) => $"Circle is centered at ({x}, y>0) with radius greater than 10",
-            _ => "Some other circle",
-        };
-        Console.WriteLine($"circle2: Center={circle2.Center}, Radius={circle2.Radius} and {circle2Desc}");
+        // 4.3. Positional pattern with user-defined Deconstruct method
+        DemoPositionalPatternsWithUserdefinedDeconstruct();
 
         // 5. ======================== logical pattern ========================
         var point3 = new Point(15, 25);
@@ -187,6 +176,7 @@ public static class Patterns
         // => Why? Because C# matches tuple element names by position, not by name.
         // Tuple element names in C# are just "labels", not "type identifiers"
     }
+
 
     private static void DemoTypePatterns()
     {
@@ -346,5 +336,26 @@ public static class Patterns
         };
         Console.WriteLine($"myTuple1: {myTuple1} and {myTuple1Desc}");
         Console.WriteLine($"myTuple2: {myTuple2} and {myTuple2Desc}");
+    }
+
+    private static void DemoPositionalPatternsWithUserdefinedDeconstruct()
+    {
+        // 4.3. Positional pattern with user-defined Deconstruct method
+        // Under the hood, the `Deconstruct` method is called: `circle2.Deconstruct(out Center, out Radius)`.
+        // Make sure the Deconstruct method is defined in the class with correct accessibility and signature:
+        // public void Deconstruct(out Point center, out double radius)
+
+        var circle2 = new Circle
+        {
+            Center = new Point(0, 0),
+            Radius = 10.0
+        };
+        var circle2Desc = circle2 switch
+        {
+            ((0, 0), 10) => "Circle is centered at origin with radius 10",
+            ((var x, > 0), > 10) => $"Circle is centered at ({x}, y>0) with radius greater than 10",
+            _ => "Some other circle",
+        };
+        Console.WriteLine($"circle2: Center={circle2.Center}, Radius={circle2.Radius} and {circle2Desc}");
     }
 }
