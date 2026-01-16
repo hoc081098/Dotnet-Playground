@@ -12,9 +12,9 @@ let rec fib n =
     if n <= 1 then n else fib (n - 1) + fib (n - 2)
 
 [<Struct>]
-type UserStruct = { name: string; age: int }
+type UserStruct = { Name: string; Age: int }
 
-type UserClass = { name: string; age: int }
+type UserClass = { Name: string; Age: int }
 
 [<EntryPoint>]
 let main args =
@@ -33,10 +33,15 @@ let main args =
     let idOfTuple: (int * int * int) list = id [ 1, 2, 3 ]
     let idOfList: int list = id [ 1; 2; 3 ]
 
-    let user: UserStruct = { name = "Hoc"; age = 28 }
-    let copiedUser: UserStruct = { user with age = 30 }
+    let user: UserStruct = { Name = "Hoc"; Age = 28 }
+    let copiedUser: UserStruct = { user with Age = 30 }
     printfn $"user is {user}"
     printfn $"copiedUser is {copiedUser}"
+
+    let userCls: UserClass = { Name = "Hoc"; Age = 28 }
+    let copiedUserCls: UserClass = { userCls with Age = 30 }
+    printfn $"userCls is {userCls}"
+    printfn $"copiedUserCls is {copiedUserCls}"
 
     // Return 0. This indicates success.
     0
