@@ -3,6 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
+        <PackageVersion Include="FSharp.Core" Version="10.0.101"/>
         <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
         <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.15.0.120848"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
