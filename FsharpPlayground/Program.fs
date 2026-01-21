@@ -72,6 +72,20 @@ type UserStruct = { Name: string; Age: int }
 
 type UserClass = { Name: string; Age: int }
 
+let performStep1 () =
+    printfn "performStep1 is calling..."
+    42
+
+let performStep2 step1Result =
+    printfn $"performStep2 is calling with step1Result={step1Result}"
+    step1Result * 2 + 24
+
+let expensiveCalculation =
+    lazy
+        (let step1 = performStep1 ()
+         let step2 = performStep2 step1
+         $"{step1}-and-{step2}")
+
 [<EntryPoint>]
 let main args =
     runAll ()
@@ -101,5 +115,12 @@ let main args =
     printfn $"userCls is {userCls}"
     printfn $"copiedUserCls is {copiedUserCls}"
 
+    let cal = expensiveCalculation
+    printfn $"cal before evaluation"
+    let forced1 = cal.Force()
+    let forced2 = cal.Value
+    printfn $"cal.Force() is {forced1}"
+    printfn $"cal.Value is {forced2}"
+    
     // Return 0. This indicates success.
     0
