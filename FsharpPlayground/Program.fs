@@ -1,6 +1,8 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 
+open System
 open System.Net.Http
+open FsToolkit.ErrorHandling
 
 // 💠 Mới copy 1 đoạn code mẫu về async expression của F# trên docs bỏ vô chạy thử trong JetBrains Rider,
 // đúng kiểu Functional Programming — đọc code thấy sướng người 😄. F# mang vibe OCaml, nhưng có chút gì đó Haskell.
@@ -86,6 +88,37 @@ let expensiveCalculation =
          let step2 = performStep2 step1
          $"{step1}-and-{step2}")
 
+let getResult1 () : Result<int, string> =
+    let random = Random.Shared.Next()
+
+    if random % 2 = 0 then
+        Ok random
+    else
+        Error $"Got an odd number: {random}"
+
+let getResult2 (result1: int) : Result<int, string> =
+    let random = Random.Shared.Next()
+    let number = result1 + random
+
+    if number % 2 <> 0 then
+        Ok number
+    else
+        Error $"Got an even number: {number}"
+
+let getResult3 (result1: int) (result2: int) = result1 + result2
+
+let finalResult () : Result<int, string> =
+    // Result Computation Expression from FsToolkit.ErrorHandling
+    result {
+        let! result1 = getResult1 ()
+        let! result2 = getResult2 result1
+        return getResult3 result1 result2
+    }
+
+let finalResult2 () : Result<int, string> =
+    getResult1 ()
+    |> Result.bind (fun result1 -> getResult2 result1 |> Result.map (getResult3 result1))
+
 [<EntryPoint>]
 let main args =
     runAll ()
@@ -121,6 +154,17 @@ let main args =
     let forced2 = cal.Value
     printfn $"cal.Force() is {forced1}"
     printfn $"cal.Value is {forced2}"
-    
+
+    let res1 = finalResult ()
+    let res2 = finalResult2 ()
+
+    match res1 with
+    | Ok resultValue -> printfn $"res1 is ok: {resultValue}"
+    | Error errorValue -> printfn $"res1 is error: {errorValue}"
+
+    match res2 with
+    | Ok resultValue -> printfn $"res2 is ok: {resultValue}"
+    | Error errorValue -> printfn $"res2 is error: {errorValue}"
+
     // Return 0. This indicates success.
     0

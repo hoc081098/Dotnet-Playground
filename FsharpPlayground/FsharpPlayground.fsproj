@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="FSharp.Core"/>
+        <PackageReference Include="FsToolkit.ErrorHandling" />
     </ItemGroup>
 
 </Project>
