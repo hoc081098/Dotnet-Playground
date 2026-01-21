@@ -1,6 +1,62 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 
-open System.Linq
+open System.Net.Http
+
+// 💠 Mới copy 1 đoạn code mẫu về async expression của F# trên docs bỏ vô chạy thử trong JetBrains Rider,
+// đúng kiểu Functional Programming — đọc code thấy sướng người 😄. F# mang vibe OCaml, nhưng có chút gì đó Haskell.
+// 💠 urlList
+// • urlList là một value (không phải hàm), có kiểu (string * string) list
+// • Mỗi phần tử là tuple (name, url)
+let urlList: (string * string) list =
+    [ "Microsoft.com", "http://www.microsoft.com/"
+      "MSDN", "http://msdn.microsoft.com/"
+      "Bing", "http://www.bing.com" ]
+
+// 💠 fetchAsync
+// • fetchAsync nhận 2 tham số name, url và trả về Async<unit>
+// (Async<'T> trong F# tương đương với Task<T> bên C#, nhưng Lazy).
+
+// • async { ... } là async computation expression
+// Bên trong dùng các keyword kiểu monadic comprehension (let!, return, …)
+
+// • use httpClient: vì HttpClient implement IDisposable nên dùng use để auto-dispose khi async workflow kết thúc
+// (tương tự using trong C# nhưng an toàn với async)
+
+// • GetStringAsync trả về Task<string> → cần convert sang Async<string> bằng Async.AwaitTask.
+// Sau đó dùng let! để unwrap (let! ~~ await trong C#, trong FP gọi là bind())
+let fetchAsync (name: string, url: string) : Async<unit> =
+    async {
+        try
+            let uri = System.Uri(url)
+            use httpClient = new HttpClient()
+            let! html = httpClient.GetStringAsync(uri) |> Async.AwaitTask
+            printfn $"Read {html.Length} characters for {name}"
+        with (ex: exn) ->
+            printfn $"Failed: {ex.Message}"
+    }
+
+// 💠 runAll
+// • Pipe operator (|>) lấy kết quả bên trái truyền làm tham số đầu tiên cho hàm bên phải
+// Về bản chất:
+// let inline (|>) x f = f x
+// • Seq.map fetchAsync: map list (string * string) thành Seq<Async<unit>>
+// • Async.Parallel: gom nhiều Async<unit> thành Async<unit array>
+// (tương tự Task.WhenAll bên C#)
+// • Async.RunSynchronously: chạy blocking và chờ async hoàn tất
+// (tương tự Task.GetAwaiter().GetResult() — thường chỉ dùng trong console/demo)
+// • ignore: bỏ qua kết quả, luôn trả về unit
+// 💠💠💠
+// Tổng thể, code rất “FP đúng nghĩa”:
+// • data flow rõ ràng từ trên xuống
+// • side-effect bị nhốt trong Async
+// • không ceremony, không noise
+// Cảm giác đọc rất đã 😄
+let runAll () =
+    urlList
+    |> Seq.map fetchAsync
+    |> Async.Parallel
+    |> Async.RunSynchronously
+    |> ignore
 
 let sum1 (a: int) (b: int) : int = a + b
 let sum2 a b = a + b
@@ -18,6 +74,8 @@ type UserClass = { Name: string; Age: int }
 
 [<EntryPoint>]
 let main args =
+    runAll ()
+
     printfn "Hello from F#"
     printfn "Arguments passed to function : %A" args
     printfn $"Arguments passed to function : %A{args}"
