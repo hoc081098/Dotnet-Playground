@@ -49,6 +49,60 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast");
 
+app.MapGet("/json-owner/{id:int}",
+    async (int id,
+        JsonOwnedContext dbContext,
+        CancellationToken cancellationToken) =>
+    {
+        var item = await dbContext.JsonOwners
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        return item is null ? Results.NotFound() : Results.Ok(item);
+    });
+
+app.MapPut("/json-owner/{id:int}",
+    async (int id,
+        JsonOwnedContext dbContext,
+        CancellationToken cancellationToken) =>
+    {
+        var item = await dbContext.JsonOwners.FindAsync([id], cancellationToken: cancellationToken);
+        if (item is null)
+        {
+            return Results.NotFound();
+        }
+
+        // Update some values
+        item.Details.Name += $" updated_at_{DateTimeOffset.UtcNow}";
+        item.Details.SubDetails[0].Value += $" updated_at_{DateTimeOffset.UtcNow}";
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Results.Ok(item);
+    });
+
+app.MapPost("/json-owner",
+    async (JsonOwnedContext dbContext,
+        CancellationToken cancellationToken) =>
+    {
+        var jsonOwner = new JsonOwner
+        {
+            Details = new JsonDetails
+            {
+                Name = "Owner 1",
+                SubDetails =
+                [
+                    new JsonSubDetail { Value = "Owner 1 - SubDetail 1" },
+                    new JsonSubDetail { Value = "Owner 1 - SubDetail 2" }
+                ]
+            }
+        };
+
+        dbContext.JsonOwners.Add(jsonOwner);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Results.Created($"/json-owner/{jsonOwner.Id}", jsonOwner);
+    });
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
