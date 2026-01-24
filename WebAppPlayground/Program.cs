@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
 
@@ -75,6 +76,19 @@ app.MapPut("/json-owner/{id:int}",
         // Update some values
         item.Details.Name += $" updated_at_{DateTimeOffset.UtcNow}";
         item.Details.SubDetails[0].Value += $" updated_at_{DateTimeOffset.UtcNow}";
+
+        // Log the change tracker state before saving
+        Console.WriteLine(">>> " + dbContext.ChangeTracker.DebugView.ShortView);
+        foreach (var entry in dbContext.ChangeTracker.Entries())
+        {
+            Console.WriteLine($">>> Entity: '{entry.Entity.GetType().Name}', State: {entry.State}");
+            foreach (var prop in entry.Properties)
+            {
+                Console.WriteLine(
+                    $">>>      '{prop.Metadata.Name}': FROM '{prop.OriginalValue}' -> '{prop.CurrentValue}'");
+            }
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Results.Ok(item);
