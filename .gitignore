@@ -5,3 +5,7 @@ riderModule.iml
 /_ReSharper.Caches/
 .DS_Store
 CsharpPlayground.sln.DotSettings.user
+
+# User secrets / local config
+*.user
+*.local
