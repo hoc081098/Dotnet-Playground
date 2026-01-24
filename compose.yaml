@@ -1,0 +1,16 @@
+﻿services:
+  web-app-playground-db:
+    image: postgres:18-alpine
+    container_name: web-app-playground-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=WebAppPlaygroundDb
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_web_app_playground_db:/var/lib/postgresql
+
+volumes:
+  postgres_web_app_playground_db:

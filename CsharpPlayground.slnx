@@ -4,6 +4,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
   <Project Path="CsharpPlayground.Tests/CsharpPlayground.Tests.csproj" />
   <Project Path="CsharpPlayground/CsharpPlayground.csproj" />
   <Project Path="FsharpPlayground/FsharpPlayground.fsproj" />
