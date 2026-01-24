@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="CsharpPlayground.Tests/CsharpPlayground.Tests.csproj" />
+  <Project Path="CsharpPlayground/CsharpPlayground.csproj" />
+  <Project Path="FsharpPlayground/FsharpPlayground.fsproj" />
+  <Project Path="WebAppPlayground/WebAppPlayground.csproj" />
+</Solution>

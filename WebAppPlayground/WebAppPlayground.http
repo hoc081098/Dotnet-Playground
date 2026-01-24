@@ -1,0 +1,6 @@
+@WebAppPlayground_HostAddress = http://localhost:5091
+
+GET {{WebAppPlayground_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
