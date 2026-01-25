@@ -2,6 +2,8 @@
 
 A personal learning playground for exploring **C#**, **F#**, and **.NET** features, patterns, and best practices.
 
+[![Build & Test 🧪](https://github.com/hoc081098/Dotnet-Playground/actions/workflows/build.yml/badge.svg)](https://github.com/hoc081098/Dotnet-Playground/actions/workflows/build.yml)
+
 ## 📁 Project Structure
 
 ```
