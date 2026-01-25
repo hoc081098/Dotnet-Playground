@@ -55,6 +55,13 @@ public static class EventsPlayground
 
         publisher.EventReceived -= Handle3;
         publisher.Emit("An event with no handlers " + DateTimeOffset.Now);
+
+        // Without `event` keyword, this would be possible. But with `event`, this line causes a compile-time error:
+        // ```
+        // The event 'EventReceived' can only appear on the left hand side of += or -=
+        // (except when used from within the class 'CsharpPlayground.DelegatesAndEvents.EventsPlayground.EventPublisher<T>')
+        // ```
+        // publisher.EventReceived = null;
     }
 
     private static void Handle3(object? sender, string value) =>
@@ -62,6 +69,9 @@ public static class EventsPlayground
 
     private sealed class EventPublisher<T>
     {
+        // `event` keyword enforces encapsulation for multicast delegates.
+        // - Only this class can invoke or modify (reassign) the delegate instance.
+        // - Outside code can only subscribe/unsubscribe via += and -=.
         public event EventHandler<T>? EventReceived;
 
         public void Emit(T @event)
