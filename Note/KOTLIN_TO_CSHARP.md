@@ -8,20 +8,33 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ## Table of Contents
 
-1. [Basic Syntax](#basic-syntax)
-2. [Collections](#collections)
-3. [Functions and Lambdas](#functions-and-lambdas)
-4. [Classes and Objects](#classes-and-objects)
-5. [Null Safety](#null-safety)
-6. [Async Programming](#async-programming)
-7. [Properties and Fields](#properties-and-fields)
-8. [Interfaces and Inheritance](#interfaces-and-inheritance)
-9. [Generics](#generics)
-10. [Common Patterns](#common-patterns)
+### Part I: Language Basics
+1. [I. Basic Syntax](#i-basic-syntax)
+2. [II. Collections](#ii-collections)
+3. [III. Functions and Lambdas](#iii-functions-and-lambdas)
+4. [IV. Classes and Objects](#iv-classes-and-objects)
+5. [V. Null Safety](#v-null-safety)
+
+### Part II: Advanced Features
+6. [VI. Async Programming](#vi-async-programming)
+7. [VII. Properties and Fields](#vii-properties-and-fields)
+8. [VIII. Interfaces and Inheritance](#viii-interfaces-and-inheritance)
+9. [IX. Generics](#ix-generics)
+10. [X. Common Patterns](#x-common-patterns)
+
+### Part III: Summary & Resources
+11. [XI. Key Differences Summary](#xi-key-differences-summary)
+12. [XII. Recommended Learning Path](#xii-recommended-learning-path)
+13. [XIII. Additional Resources](#xiii-additional-resources)
+
+### Part IV: Repository Coverage
+14. [XIV. Language Features Covered](#xiv-language-features-covered)
+15. [XV. Backend Concepts (To Be Added)](#xv-backend-concepts-to-be-added)
+16. [XVI. Key Differences: Kotlin/Java vs C#/.NET](#xvi-key-differences-kotlinjava-vs-cnet)
 
 ---
 
-## Basic Syntax
+## I. Basic Syntax
 
 ### Variables and Constants
 
@@ -52,7 +65,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Collections
+## II. Collections
 
 ### List Operations
 
@@ -90,7 +103,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Functions and Lambdas
+## III. Functions and Lambdas
 
 ### Function Declarations
 
@@ -125,7 +138,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Classes and Objects
+## IV. Classes and Objects
 
 ### Class Declaration
 
@@ -155,7 +168,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Null Safety
+## V. Null Safety
 
 ### Nullable Types
 
@@ -177,7 +190,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Async Programming
+## VI. Async Programming
 
 ### Async/Await
 
@@ -201,7 +214,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Properties and Fields
+## VII. Properties and Fields
 
 ### Access Modifiers
 
@@ -223,7 +236,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Interfaces and Inheritance
+## VIII. Interfaces and Inheritance
 
 ### Interface Declaration
 
@@ -244,7 +257,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Generics
+## IX. Generics
 
 ### Generic Types
 
@@ -259,7 +272,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Common Patterns
+## X. Common Patterns
 
 ### Extension Functions
 
@@ -294,7 +307,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Key Differences Summary
+## XI. Key Differences Summary
 
 ### Major Conceptual Differences
 
@@ -340,7 +353,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Recommended Learning Path
+## XII. Recommended Learning Path
 
 1. ✅ **Master basic syntax differences** (strings, collections, null safety)
 2. ✅ **Understand async/await** (compared to Kotlin coroutines)
@@ -354,7 +367,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Additional Resources
+## XIII. Additional Resources
 
 - [Microsoft C# Guide](https://learn.microsoft.com/en-us/dotnet/csharp/)
 - [Kotlin to C# Playground](https://github.com/hoc081098/Dotnet-Playground) (this repository)
@@ -363,7 +376,7 @@ This guide helps Android/Kotlin developers quickly map their existing knowledge 
 
 ---
 
-## Language Features Covered
+## XIV. Language Features Covered
 
 ### 1. **Async/Await Programming** (`AsyncProgramming/`)
 **Kotlin/Java Equivalent:** Coroutines (Kotlin), CompletableFuture (Java)
@@ -463,7 +476,7 @@ Understanding default values for:
 - Value types (struct, record struct)
 - Nullable types (`int?`, `Nullable<T>`)
 
-## Backend Concepts (To Be Added)
+## XV. Backend Concepts (To Be Added)
 
 ### Essential Mid-Level .NET Backend Skills (Not Yet Covered):
 
@@ -510,7 +523,7 @@ Understanding default values for:
    - gRPC services
    - Message queues (RabbitMQ, Azure Service Bus)
 
-## Key Differences: Kotlin/Java vs C#/.NET
+## XVI. Key Differences: Kotlin/Java vs C#/.NET
 
 ### Syntax Differences
 | Concept | Kotlin/Java | C# |

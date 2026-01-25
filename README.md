@@ -79,6 +79,10 @@ dotnet test
 - **Minimal APIs** - Lightweight HTTP endpoints
 - **EF Core** - JSON columns, migrations, PostgreSQL
 
+## 📚 Documentation
+
+- **[Kotlin/Java to C#/.NET Comparison Guide](Note/KOTLIN_TO_CSHARP.md)** - Comprehensive guide for Android/Kotlin developers learning C#/.NET
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
