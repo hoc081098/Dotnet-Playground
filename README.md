@@ -1,4 +1,4 @@
-# C# Playground 🎮
+# .NET Playground 🎮
 
 A personal learning playground for exploring **C#**, **F#**, and **.NET** features, patterns, and best practices.
 
