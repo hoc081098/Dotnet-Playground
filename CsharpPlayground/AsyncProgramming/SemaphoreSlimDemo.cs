@@ -4,23 +4,40 @@ public class SemaphoreSlimDemo
 {
     public static void Run()
     {
+        // ```
+        // Wait():
+        //   if currentCount > 0:
+        //     currentCount--
+        //     proceed
+        //   else:
+        //     enqueue waiter
+        //     wait
+        // 
+        // Release():
+        //   if waiter exists:
+        //     wake one waiter
+        //   else if currentCount < maxCount:
+        //     currentCount++
+        //   else:
+        //     throw
+        // ```
         Gate();
         Basic();
     }
 
     private static void Gate()
     {
-        // initialCount = 0, maxCount = 2
-        // ⇒ ban đầu không ai được đi qua
-        // ⇒ chỉ khi có .Release() thì mới mở cổng
-        // Nó đúng nghĩa là gate / latch / signal, không phải semaphore “giới hạn concurrency” thuần nữa.
+        // initialCount = 0, maxCount = 3
+        // ⇒ Initially, no one can pass through
+        // ⇒ Only when .Release() is called, the gate opens
+        // This is essentially a gate / latch / signal, not a pure "concurrency limiting" semaphore.
         var gate = new SemaphoreSlim(initialCount: 0, maxCount: 3);
 
         // count = 0
-        // Mọi Wait() / WaitAsync() → block / await
-        // Ví dụ mental model
-        // •	Consumer: WaitAsync() → chờ
-        // •	Producer / Controller: Release() → cho phép tiếp tục
+        // All Wait() / WaitAsync() calls → block / await
+        // Mental model example:
+        // • Consumer: WaitAsync() → waits
+        // • Producer / Controller: Release() → allows continuation
 
         List<Task> tasks =
         [
@@ -81,8 +98,8 @@ public class SemaphoreSlimDemo
             var task = Task.Run(async () =>
             {
                 var acquired = await semaphore.WaitAsync(timeout: TimeSpan.FromSeconds(30));
-                // WaitAsync(timeout) để tránh deadlock vô hạn -> return false nếu không lấy được
-                // WaitAsync() -> return Task that never completes nếu không lấy được
+                // WaitAsync(timeout) to avoid infinite deadlock -> returns false if unable to acquire
+                // WaitAsync() -> returns a Task that never completes if unable to acquire
                 if (acquired)
                 {
                     try
