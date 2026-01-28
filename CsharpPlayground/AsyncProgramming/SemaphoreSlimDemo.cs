@@ -42,7 +42,6 @@ public class SemaphoreSlimDemo
         // Mental model example:
         // • Consumer: WaitAsync() → waits
         // • Producer / Controller: Release() → allows continuation
-
         List<Task> tasks =
         [
             Task.Run(async () =>
@@ -51,20 +50,18 @@ public class SemaphoreSlimDemo
                 await gate.WaitAsync(); // Wait until allowed to proceed
                 Console.WriteLine("[1] end");
             }),
-
             Task.Run(async () =>
             {
                 Console.WriteLine("[2] start, waiting...");
                 await gate.WaitAsync(); // Wait until allowed to proceed
                 Console.WriteLine("[2] end");
             }),
-
             Task.Run(async () =>
             {
                 Console.WriteLine("[3] start, waiting...");
                 await gate.WaitAsync(); // Wait until allowed to proceed
                 Console.WriteLine("[3] end");
-            }),
+            })
         ];
 
         Task.Run(async () =>
@@ -93,24 +90,25 @@ public class SemaphoreSlimDemo
 
     private static void Basic()
     {
+        // currentCount = 2, maxCount = 2
         var semaphore = new SemaphoreSlim(initialCount: 2, maxCount: 2);
 
         var tasks = new List<Task>();
         for (var i = 0; i < 10; i++)
         {
-            var curI = i;
+            var curIndex = i; // Capture loop variable
             var task = Task.Run(async () =>
             {
+                // WaitAsync(timeout) to avoid infinite deadlock -> returns `false` if unable to acquire.
+                // WaitAsync without timeout may cause infinite wait if all tasks are stuck.
                 var acquired = await semaphore.WaitAsync(timeout: TimeSpan.FromSeconds(30));
-                // WaitAsync(timeout) to avoid infinite deadlock -> returns false if unable to acquire
-                // WaitAsync() -> returns a Task that never completes if unable to acquire
                 if (acquired)
                 {
                     try
                     {
-                        Console.WriteLine($"Index {curI} acquired the semaphore.");
+                        Console.WriteLine($"Index {curIndex} acquired the semaphore.");
                         await Task.Delay(2000); // Simulate some work
-                        Console.WriteLine($"Index {curI} releasing the semaphore.");
+                        Console.WriteLine($"Index {curIndex} releasing the semaphore.");
                     }
                     finally
                     {
