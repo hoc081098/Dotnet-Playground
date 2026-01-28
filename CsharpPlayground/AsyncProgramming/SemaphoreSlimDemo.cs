@@ -1,9 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace CsharpPlayground.AsyncProgramming;
 
+[SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
 public class SemaphoreSlimDemo
 {
     public static void Run()
     {
+        // Pseudocode of SemaphoreSlim:
         // ```
         // Wait():
         //   if currentCount > 0:
