@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
+using WebAppPlayground;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
         .UseNpgsql(dbConnectionString)
         .UseSnakeCaseNamingConvention();
 });
+
+builder.Services.AddHostedService<DemoRabbitMqBackgroundService>();
 
 var app = builder.Build();
 
@@ -96,5 +99,6 @@ app.MapPost("/json-owner",
 
         return Results.Created($"/json-owner/{jsonOwner.Id}", jsonOwner);
     });
+
 
 app.Run();
