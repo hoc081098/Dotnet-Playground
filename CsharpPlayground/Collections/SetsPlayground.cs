@@ -41,7 +41,7 @@ public static class SetsPlayground
 
         // Descending sorted set
         var descendingComparer = Comparer<int>.Create((a, b) => b.CompareTo(a));
-        var descendingSortedSet = new SortedSet<int>(descendingComparer) { 1, 4, 6, 3, 5, 7, 2, 100 };
+        var descendingSortedSet = new SortedSet<int>(comparer: descendingComparer) { 1, 4, 6, 3, 5, 7, 2, 100 };
         Console.WriteLine("descendingSortedSet: " + string.Join(", ", descendingSortedSet) + ", count = " +
                           descendingSortedSet.Count);
 
@@ -79,5 +79,17 @@ public static class SetsPlayground
         var d = ImmutableHashSet.Create(2);
         Console.WriteLine("C ⊆ D: " + c.IsSubsetOf(d)); // C is subset of D === (D.....(C)....) => false
         Console.WriteLine("C ⊇ D: " + c.IsSupersetOf(d)); // C is superset of D === (C.....(D)....) => true
+
+        // HashSet with IEqualityComparer
+        var caseInsensitiveSet = new HashSet<string>(comparer: StringComparer.OrdinalIgnoreCase)
+        {
+            "A",
+            "a",
+            "B",
+            "b"
+        };
+        // Should contain 2 elements: "A" and "B"
+        Console.WriteLine("Case Insensitive Set: " + string.Join(", ", caseInsensitiveSet) + ", count = " +
+                          caseInsensitiveSet.Count);
     }
 }
