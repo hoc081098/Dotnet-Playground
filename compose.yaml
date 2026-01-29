@@ -12,5 +12,13 @@
     volumes:
       - postgres_web_app_playground_db:/var/lib/postgresql
 
+  web-app-playground-queue:
+    image: rabbitmq:4.2.3-management
+    container_name: web-app-playground-queue
+    restart: unless-stopped
+    ports:
+      - "5672:5672" # Port for the AMQP protocol
+      - "15672:15672" # Port for the management plugin UI
+
 volumes:
   postgres_web_app_playground_db:
