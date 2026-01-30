@@ -18,6 +18,7 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
 });
 
 builder.Services.AddHostedService<DemoRabbitMqBackgroundService>();
+builder.Services.AddHostedService<DemoRabbitMqConsumerBackgroundService>();
 
 var app = builder.Build();
 
