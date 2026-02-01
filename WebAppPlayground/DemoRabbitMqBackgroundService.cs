@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -93,22 +92,38 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += async (sender, eventArgs) =>
         {
-            // 2.1. Copy the body to a new array to make it safe to use outside this event,
-            // and then parse it to an OrderPlaced instance
-            var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
-            var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
+            try
+            {
+                // 2.1. Copy the body to a new array to make it safe to use outside this event,
+                // and then parse it to an OrderPlaced instance
+                var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
+                var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
 
-            Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
-            await Task.Delay(5_000, stoppingToken); // Simulate processing time
+                Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
+                await Task.Delay(5_000, stoppingToken); // Simulate processing time
 
-            // 2.2. Acknowledge the message as processed
-            await ((AsyncEventingBasicConsumer)sender).Channel
-                .BasicAckAsync(
-                    eventArgs.DeliveryTag,
-                    multiple: false,
-                    cancellationToken: stoppingToken);
+                // 2.2. Acknowledge the message as processed
+                await ((AsyncEventingBasicConsumer)sender).Channel
+                    .BasicAckAsync(
+                        eventArgs.DeliveryTag,
+                        multiple: false,
+                        cancellationToken: stoppingToken);
 
-            Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
+                Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing RabbitMQ message: {ex.Message}");
+
+                await ((AsyncEventingBasicConsumer)sender).Channel
+                    .BasicNackAsync(
+                        eventArgs.DeliveryTag,
+                        multiple: false,
+                        // Requeue nack'd messages.
+                        requeue: true,
+                        cancellationToken: stoppingToken
+                    );
+            }
         };
 
         // 3. Start consuming messages from the queue
