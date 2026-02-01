@@ -90,41 +90,8 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 
         // 2. Declare a consumer
         var consumer = new AsyncEventingBasicConsumer(channel);
-        consumer.ReceivedAsync += async (sender, eventArgs) =>
-        {
-            try
-            {
-                // 2.1. Copy the body to a new array to make it safe to use outside this event,
-                // and then parse it to an OrderPlaced instance
-                var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
-                var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
-
-                Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
-                await Task.Delay(5_000, stoppingToken); // Simulate processing time
-
-                // 2.2. Acknowledge the message as processed
-                await ((AsyncEventingBasicConsumer)sender).Channel
-                    .BasicAckAsync(
-                        eventArgs.DeliveryTag,
-                        multiple: false,
-                        cancellationToken: stoppingToken);
-
-                Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
-            }
-            catch (Exception ex) when (ex is JsonException or NotSupportedException)
-            {
-                Console.WriteLine($"Error processing RabbitMQ message: {ex.Message}");
-
-                await ((AsyncEventingBasicConsumer)sender).Channel
-                    .BasicNackAsync(
-                        eventArgs.DeliveryTag,
-                        multiple: false,
-                        // INVALID MESSAGE - do not requeue
-                        requeue: false,
-                        cancellationToken: stoppingToken
-                    );
-            }
-        };
+        consumer.ReceivedAsync += (sender, eventArgs) =>
+            HandleMessageAsync((AsyncEventingBasicConsumer)sender, eventArgs, stoppingToken);
 
         // 3. Start consuming messages from the queue
         // this consumer tag identifies the subscription when it has to be cancelled
@@ -142,5 +109,59 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
         // 4. Wait until stopping is requested
         // If we do not wait here, the channel and connection will be disposed immediately -> cannot acknowledge messages
         await Task.Delay(Timeout.Infinite, stoppingToken);
+    }
+
+    private static async Task HandleMessageAsync(
+        AsyncEventingBasicConsumer sender,
+        BasicDeliverEventArgs eventArgs,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            // 2.1. Copy the body to a new array to make it safe to use outside this event,
+            // and then parse it to an OrderPlaced instance
+            var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
+            var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
+
+            Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
+            await Task.Delay(5_000, cancellationToken); // Simulate processing time
+
+            // 2.2. Acknowledge the message as processed
+            await sender.Channel.BasicAckAsync(
+                eventArgs.DeliveryTag,
+                multiple: false,
+                cancellationToken: cancellationToken);
+
+            Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
+        }
+        catch (OperationCanceledException ex)
+        {
+            // Ignore cancellation exceptions
+            throw;
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            Console.WriteLine($"[<<<] Rejecting RabbitMQ message due to invalid format: {ex.Message}");
+
+            // 2.3. Reject the message (nack) without requeuing - it's an invalid/poison message
+            await sender.Channel.BasicNackAsync(
+                eventArgs.DeliveryTag,
+                multiple: false,
+                // INVALID/POISON MESSAGE - do not requeue
+                requeue: false,
+                cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // 2.4. On any other error, nack the message with requeue = true
+            Console.WriteLine($"[<<<] Requeuing RabbitMQ message due to processing error: {ex.Message}");
+
+            await sender.Channel.BasicNackAsync(
+                eventArgs.DeliveryTag,
+                multiple: false,
+                // Requeue the message for another processing attempt
+                requeue: true,
+                cancellationToken: cancellationToken);
+        }
     }
 }
