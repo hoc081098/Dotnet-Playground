@@ -88,12 +88,19 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 
         Console.WriteLine($"[<<<] Queue declared: {queueDeclareOk.QueueName}");
 
-        // 2. Declare a consumer
+        // 2. Set prefetch count to 1 to process one message at a time
+        await channel.BasicQosAsync(
+            prefetchSize: 0,
+            prefetchCount: 1,
+            global: false,
+            cancellationToken: stoppingToken);
+
+        // 3. Declare a consumer
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += (sender, eventArgs) =>
             HandleMessageAsync((AsyncEventingBasicConsumer)sender, eventArgs, stoppingToken);
 
-        // 3. Start consuming messages from the queue
+        // 4. Start consuming messages from the queue
         // this consumer tag identifies the subscription when it has to be cancelled
         var consumerTag = await channel.BasicConsumeAsync(
             queue: "orders",
@@ -106,7 +113,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 
         Console.WriteLine($"[<<<] Consumer tagged: {consumerTag}");
 
-        // 4. Wait until stopping is requested
+        // 5. Wait until stopping is requested
         // If we do not wait here, the channel and connection will be disposed immediately -> cannot acknowledge messages
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
@@ -118,7 +125,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
     {
         try
         {
-            // 2.1. Copy the body to a new array to make it safe to use outside this event,
+            // 3.1. Copy the body to a new array to make it safe to use outside this event,
             // and then parse it to an OrderPlaced instance
             var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
             var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
@@ -126,7 +133,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
             Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
             await Task.Delay(5_000, cancellationToken); // Simulate processing time
 
-            // 2.2. Acknowledge the message as processed
+            // 3.2. Acknowledge the message as processed
             await sender.Channel.BasicAckAsync(
                 eventArgs.DeliveryTag,
                 multiple: false,
@@ -143,7 +150,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
         {
             Console.WriteLine($"[<<<] Rejecting RabbitMQ message due to invalid format: {ex.Message}");
 
-            // 2.3. Reject the message (nack) without requeuing - it's an invalid/poison message
+            // 3.3. Reject the message (nack) without requeuing - it's an invalid/poison message
             await sender.Channel.BasicNackAsync(
                 eventArgs.DeliveryTag,
                 multiple: false,
@@ -153,7 +160,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            // 2.4. On any other error, nack the message with requeue = true
+            // 3.4. On any other error, nack the message with requeue = true
             Console.WriteLine($"[<<<] Requeuing RabbitMQ message due to processing error: {ex.Message}");
 
             await sender.Channel.BasicNackAsync(
