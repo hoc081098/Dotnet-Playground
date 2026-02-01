@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
 using WebAppPlayground;
+using WebAppPlayground.BasicRabbitMq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,8 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
         .UseSnakeCaseNamingConvention();
 });
 
-builder.Services.AddHostedService<DemoRabbitMqBackgroundService>();
+// Add RabbitMQ background services
+builder.Services.AddHostedService<DemoRabbitMqPublisherBackgroundService>();
 builder.Services.AddHostedService<DemoRabbitMqConsumerBackgroundService>();
 
 var app = builder.Build();
@@ -82,15 +84,16 @@ app.MapPost("/json-owner",
     async (JsonOwnedContext dbContext,
         CancellationToken cancellationToken) =>
     {
+        var currentUtc = DateTimeOffset.UtcNow;
         var jsonOwner = new JsonOwner
         {
             Details = new JsonDetails
             {
-                Name = "Owner 1",
+                Name = "Owner " + currentUtc,
                 SubDetails =
                 [
-                    new JsonSubDetail { Value = "Owner 1 - SubDetail 1" },
-                    new JsonSubDetail { Value = "Owner 1 - SubDetail 2" }
+                    new JsonSubDetail { Value = $"Owner {currentUtc} - SubDetail 1" },
+                    new JsonSubDetail { Value = $"Owner {currentUtc} - SubDetail 2" }
                 ]
             }
         };
