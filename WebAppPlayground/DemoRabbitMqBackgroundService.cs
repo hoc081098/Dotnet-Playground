@@ -115,6 +115,9 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
         // this consumer tag identifies the subscription when it has to be cancelled
         var consumerTag = await channel.BasicConsumeAsync(
             queue: "orders",
+            // false <=> manual acknowledgements.
+            // We only acknowledge messages when processed successfully.
+            // If processing fails, we could use `BasicNack` to requeue or route to a dead-letter queue
             autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
