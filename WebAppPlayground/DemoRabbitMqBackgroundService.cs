@@ -16,7 +16,15 @@ public class DemoRabbitMqBackgroundService : BackgroundService
     {
         var factory = new ConnectionFactory();
 
+        // Connections are meant to be long-lived.
+        // The underlying protocol is designed and optimized for long running connections.
+        // That means that opening a new connection per operation, e.g. a message published, is unnecessary
+        // and strongly discouraged as it will introduce a lot of network roundtrips and overhead.
         await using var connection = await factory.CreateConnectionAsync(stoppingToken);
+        // Channels are also meant to be long-lived but since many recoverable protocol errors will result in channel closure,
+        // channel lifespan could be shorter than that of its connection.
+        // Closing and opening new channels per operation is usually unnecessary but can be appropriate.
+        // When in doubt, consider reusing channels first.
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         // 1. Declare a queue: ensure it exists (create it if not already existing)
