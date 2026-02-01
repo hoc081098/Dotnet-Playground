@@ -111,7 +111,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 
                 Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is JsonException or NotSupportedException)
             {
                 Console.WriteLine($"Error processing RabbitMQ message: {ex.Message}");
 
@@ -119,8 +119,8 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
                     .BasicNackAsync(
                         eventArgs.DeliveryTag,
                         multiple: false,
-                        // Requeue nack'd messages.
-                        requeue: true,
+                        // INVALID MESSAGE - do not requeue
+                        requeue: false,
                         cancellationToken: stoppingToken
                     );
             }
