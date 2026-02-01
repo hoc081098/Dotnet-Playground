@@ -36,5 +36,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapJsonOwnerEndpoints();
+app.MapDemoRestApiParamsEndPoints();
 
 app.Run();
