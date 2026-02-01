@@ -141,7 +141,7 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 
             Console.WriteLine($"[<<<] Acknowledged deliveryTag={eventArgs.DeliveryTag}");
         }
-        catch (OperationCanceledException ex)
+        catch (OperationCanceledException)
         {
             // Ignore cancellation exceptions
             throw;
