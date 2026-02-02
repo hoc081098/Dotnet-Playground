@@ -22,6 +22,12 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
 builder.Services.AddHostedService<DemoRabbitMqPublisherBackgroundService>();
 builder.Services.AddHostedService<DemoRabbitMqConsumerBackgroundService>();
 
+builder.Services.AddAntiforgery(options =>
+{
+    // Just setting the name of XSRF token
+    options.HeaderName = "X-XSRF-TOKEN";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +41,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAntiforgery();
+
 app.MapJsonOwnerEndpoints();
 app.MapDemoRestApiParamsEndPoints();
 

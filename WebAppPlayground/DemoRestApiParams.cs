@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAppPlayground;
@@ -10,6 +11,14 @@ public static class DemoRestApiParams
     {
         public void MapDemoRestApiParamsEndPoints()
         {
+            // Get token
+            endpoints.MapGet("antiforgery/token", (IAntiforgery forgeryService, HttpContext context) =>
+            {
+                var tokens = forgeryService.GetAndStoreTokens(context);
+                var xsrfToken = tokens.RequestToken!;
+                return TypedResults.Content(xsrfToken, contentType: "text/plain");
+            });
+
             // Use attributes
             var group1 = endpoints.MapGroup("/demo-rest-api-params-1");
 
@@ -29,7 +38,7 @@ public static class DemoRestApiParams
             // 3. Header param
             group1.MapGet("/demo-resources/header",
                 (
-                    [FromHeader(Name = "X-Api-Key")] string apiKey
+                    [FromHeader(Name = "X-Api-Key")] string? apiKey
                 ) => Results.Ok(new { ApiKey = apiKey }));
 
             // 4. Request body
@@ -58,8 +67,8 @@ public static class DemoRestApiParams
                     {
                         FileName = fileName,
                         UploadedFileName = file.FileName,
-                        ContentType = file.ContentType,
-                        Length = file.Length,
+                        file.ContentType,
+                        file.Length,
                         FirstBytesHex = Convert.ToHexString(buffer),
                     });
                 });
@@ -86,8 +95,8 @@ public static class DemoRestApiParams
                     {
                         FileName = fileName,
                         UploadedFileName = file.FileName,
-                        ContentType = file.ContentType,
-                        Length = file.Length,
+                        file.ContentType,
+                        file.Length,
                         Bytes = Convert.ToHexString(bytes),
                     });
                 });
@@ -110,21 +119,26 @@ public static class DemoRestApiParams
                     // Create directory if not exists
                     var dirPath = Path.Combine(AppContext.BaseDirectory, "UploadedFiles");
                     Directory.CreateDirectory(dirPath);
+                    Console.WriteLine(">>> AppContext.BaseDirectory: " + AppContext.BaseDirectory);
+                    Console.WriteLine(">>> Upload directory: " + dirPath);
 
                     // Generate file path
                     var safeFileName = Path.GetFileName(file.FileName);
-                    var filePath = Path.Combine(dirPath, $"{Guid.NewGuid()}_{safeFileName}_{fileName}");
+                    var filePath = Path.Combine(dirPath, $"{Guid.NewGuid()}_{fileName}_{safeFileName}");
+                    Console.WriteLine($">>> safeFileName: {safeFileName}");
+                    Console.WriteLine($">>> filePath: {filePath}");
 
                     // Copy to output stream
                     await using var outputStream = File.Create(filePath);
                     await file.CopyToAsync(outputStream, cancellationToken);
+                    Console.WriteLine(">>> Uploaded file saved to: " + Path.GetFullPath(filePath));
 
                     return Results.Ok(new
                     {
                         FileName = fileName,
                         UploadedFileName = file.FileName,
-                        ContentType = file.ContentType,
-                        Length = file.Length,
+                        file.ContentType,
+                        file.Length,
                         SavedAs = Path.GetFileName(filePath)
                     });
                 });
