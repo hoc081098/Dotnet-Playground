@@ -143,17 +143,23 @@ public static class DemoRestApiParams
                     });
                 });
 
-            // 6. Cookie param
+            // 6. Cookie param.
+            // Header: "Cookie: Session-Id=abc123; theme=dark; lang=vi"
             group1.MapGet("/demo-resources/cookie",
                 (HttpRequest request) => request.Cookies["Session-Id"] is { } sessionId
                     ? Results.Ok(new { SessionId = sessionId })
                     : Results.BadRequest("Missing 'session-id' cookie."));
 
-            // 6. Route data
-            group1.MapGet("/demo-resources/route-data/{additional}",
-                (HttpRequest request) =>
+            // 6. Route data via request.RouteValues
+            group1.MapGet("/demo-resources/route-data/{additional:alpha}",
+                (string additional, HttpRequest request) =>
                 {
-                    var additional = request.RouteValues["additional"];
+                    var additionalViaRouteValues = request.RouteValues["additional"];
+                    if (additionalViaRouteValues is not string v || v != additional)
+                    {
+                        return Results.BadRequest(additionalViaRouteValues);
+                    }
+
                     return Results.Ok(new { Additional = additional });
                 });
         }
