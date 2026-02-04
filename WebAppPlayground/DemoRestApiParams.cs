@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAppPlayground;
@@ -11,14 +10,6 @@ public static class DemoRestApiParams
     {
         public void MapDemoRestApiParamsEndPoints1()
         {
-            // Get token
-            endpoints.MapGet("antiforgery/token", (IAntiforgery forgeryService, HttpContext context) =>
-            {
-                var tokens = forgeryService.GetAndStoreTokens(context);
-                var xsrfToken = tokens.RequestToken!;
-                return TypedResults.Content(xsrfToken, contentType: "text/plain");
-            });
-
             // Use attributes
             var group1 = endpoints.MapGroup("/demo-rest-api-params-1");
 

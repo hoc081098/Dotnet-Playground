@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
 using WebAppPlayground;
@@ -42,6 +43,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
+
+// Get token
+app.MapGet("antiforgery/token", (IAntiforgery forgeryService, HttpContext context) =>
+{
+    var tokens = forgeryService.GetAndStoreTokens(context);
+    var xsrfToken = tokens.RequestToken!;
+    return TypedResults.Content(xsrfToken, contentType: "text/plain");
+});
 
 app.MapJsonOwnerEndpoints();
 app.MapDemoRestApiParamsEndPoints1();
