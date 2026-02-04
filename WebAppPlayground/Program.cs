@@ -44,6 +44,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapJsonOwnerEndpoints();
-app.MapDemoRestApiParamsEndPoints();
+app.MapDemoRestApiParamsEndPoints1();
+app.MapDemoRestApiParamsEndPoints2();
 
 app.Run();
