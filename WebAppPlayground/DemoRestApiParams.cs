@@ -196,9 +196,9 @@ public static class DemoRestApiParams
                     return Results.Created($"/demo-resources/{id}", res);
                 });
 
-            // 5. Form data - without attributes
+            // 5. Form data - without attributes. But fileName is from form field, not query string or route -> need [FromForm]
             group2.MapPost("/demo-resources/avatar1",
-                async (string fileName,
+                async ([FromForm] string fileName,
                     IFormFile file,
                     CancellationToken cancellationToken) =>
                 {
@@ -221,7 +221,7 @@ public static class DemoRestApiParams
                 });
 
             group2.MapPost("/demo-resources/avatar2",
-                async (string fileName,
+                async ([FromForm] string fileName,
                     IFormFile file,
                     CancellationToken cancellationToken) =>
                 {
@@ -249,7 +249,7 @@ public static class DemoRestApiParams
                 });
 
             group2.MapPost("/demo-resources/avatar3",
-                async (string fileName,
+                async ([FromForm] string fileName,
                     IFormFile file,
                     CancellationToken cancellationToken) =>
                 {
