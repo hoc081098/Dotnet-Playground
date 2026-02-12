@@ -2,6 +2,16 @@ using RabbitMQ.Client;
 
 namespace WebAppPlayground.RabbitMq.TopicWithDlx;
 
+// orders-exchange (topic)
+//    ↓
+// orders-consumer-1 (queue)
+//    x-dead-letter-exchange = orders-deadletter-exchange
+// 
+//
+//
+// orders-deadletter-exchange (fanout)
+//    ↓
+// orders-deadletter-queue
 public static class TopicWithDlxConfig
 {
     public const string ExchangeName = "orders-exchange";
