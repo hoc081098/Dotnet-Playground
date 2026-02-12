@@ -13,6 +13,9 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         await using var connection = await factory.CreateConnectionAsync(stoppingToken);
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
+        // 0. Setup dead-letter exchange and queue
+        await channel.SetupForDlxAsync();
+
         // 1. Declare a topic exchange.
         // This ensures that the exchange exists (creates it if not already existing).
         await channel.ExchangeDeclareAsync(
@@ -23,12 +26,20 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
             cancellationToken: stoppingToken);
 
         // 2. Declare the queue and bind it.
+        // https://www.rabbitmq.com/docs/dlx#overview
+        var arguments = new Dictionary<string, object?>
+        {
+            { "x-dead-letter-exchange", TopicWithDlxConfig.MyDeadletterExchange }
+        };
+
         await channel.QueueDeclareAsync(
             queue: TopicWithDlxConfig.QueueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
+            arguments: arguments,
             cancellationToken: stoppingToken);
+
         await channel.QueueBindAsync(
             queue: TopicWithDlxConfig.QueueName,
             exchange: TopicWithDlxConfig.ExchangeName,
@@ -108,7 +119,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         {
             Console.WriteLine($"[<<<] Rejecting RabbitMQ message due to invalid format: {ex.Message}");
 
-            // 4.3. Reject the message (nack) without requeuing - it's an invalid/poison message
+            // 4.3. Reject the message (nack) and send it to the DLX - it's an invalid/poison message
             await sender.Channel.BasicNackAsync(
                 eventArgs.DeliveryTag,
                 multiple: false,
@@ -119,7 +130,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         catch (Exception ex)
         {
             // 4.4. On any other error, nack the message with requeue = true
-            Console.WriteLine($"[<<<] Requeuing RabbitMQ message due to processing error: {ex.Message}");
+            Console.WriteLine($"[<<<] Requeue RabbitMQ message due to processing error: {ex.Message}");
 
             await sender.Channel.BasicNackAsync(
                 eventArgs.DeliveryTag,
