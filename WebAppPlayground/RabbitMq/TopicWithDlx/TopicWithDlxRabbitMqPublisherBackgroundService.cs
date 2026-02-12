@@ -20,16 +20,17 @@ public class TopicWithDlxRabbitMqPublisherBackgroundService : BackgroundService
             durable: true, // durable exchange
             autoDelete: false, // don’t delete when the last consumer disconnects
             cancellationToken: stoppingToken);
-        
+
         Console.WriteLine($"[>>>] Exchange declared: {TopicWithDlxConfig.ExchangeName}");
 
         // 2. Publish messages to the exchange
         for (var i = 0; i < 10; i++)
         {
-            var task = (i % 2) switch
+            var task = (i % 3) switch
             {
                 0 => PublishOrderPlacedAsync(channel, i, stoppingToken),
-                _ => PublishOtherMessageAsync(channel, i, stoppingToken),
+                1 => PublishOtherMessageAsync(channel, i, stoppingToken),
+                _ => PublishPoisonOrderPlacedAsync(channel, i, stoppingToken),
             };
             await task;
             await Task.Delay(10_000, stoppingToken);
@@ -91,5 +92,26 @@ public class TopicWithDlxRabbitMqPublisherBackgroundService : BackgroundService
             cancellationToken: stoppingToken);
 
         Console.WriteLine($"[>>>] Sent Other message: {otherMessage}");
+    }
+
+    private static async Task PublishPoisonOrderPlacedAsync(
+        IChannel channel,
+        int i,
+        CancellationToken stoppingToken)
+    {
+        var invalidOrderPlacedJson =
+            $$"""{"orderId":"not-a-guid", "totalAmount":"NaN", "createdAtUtc":"invalid-{{i}}"}""";
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(invalidOrderPlacedJson);
+
+        const string routingKey = "orders.placed";
+        await channel.BasicPublishAsync(
+            exchange: TopicWithDlxConfig.ExchangeName,
+            routingKey: routingKey,
+            mandatory: true,
+            basicProperties: new BasicProperties { Persistent = true },
+            body: bytes,
+            cancellationToken: stoppingToken);
+
+        Console.WriteLine("[>>>] Sent poison OrderPlaced payload to trigger DLQ.");
     }
 }
