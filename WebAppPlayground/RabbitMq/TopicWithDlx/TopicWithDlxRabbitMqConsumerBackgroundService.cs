@@ -46,7 +46,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         await channel.QueueBindAsync(
             queue: TopicWithDlxConfig.QueueName,
             exchange: TopicWithDlxConfig.ExchangeName,
-            routingKey: TopicWithDlxConfig.Binding,
+            routingKey: TopicWithDlxConfig.BindingKey,
             cancellationToken: stoppingToken);
 
         Console.WriteLine($"[<<<] Queue declared and bound: {TopicWithDlxConfig.QueueName}");

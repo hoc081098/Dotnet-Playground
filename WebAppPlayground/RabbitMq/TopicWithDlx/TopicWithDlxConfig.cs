@@ -16,10 +16,10 @@ public static class TopicWithDlxConfig
 {
     public const string ExchangeName = "orders-exchange";
     public const string QueueName = "orders-consumer-1";
-    public const string Binding = "orders.*";
+    public const string BindingKey = "orders.*";
 
     public const string DeadletterExchange = "orders-deadletter-exchange";
-    public const string DeadletterQueue = "orders-deadletter-queue";
+    private const string DeadletterQueue = "orders-deadletter-queue";
 
     public static async Task SetupForDlxAsync(this IChannel channel, CancellationToken cancellationToken = default)
     {
