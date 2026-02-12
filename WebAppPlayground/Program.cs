@@ -21,7 +21,7 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
 });
 
 // Add RabbitMQ background services
-var demoRabbitMq = DemoRabbitMq.TopicWithDlx;
+DemoRabbitMq demoRabbitMq = DemoRabbitMq.TopicWithDlx;
 
 // ReSharper disable once UnreachableSwitchCaseDueToIntegerAnalysis
 switch (demoRabbitMq)
@@ -35,7 +35,7 @@ switch (demoRabbitMq)
         builder.Services.AddHostedService<TopicWithDlxRabbitMqPublisherBackgroundService>();
         break;
     default:
-        throw new ArgumentOutOfRangeException();
+        throw new InvalidOperationException($"Unknown demo RabbitMQ type: {demoRabbitMq}");
 }
 
 builder.Services.AddAntiforgery(options =>
