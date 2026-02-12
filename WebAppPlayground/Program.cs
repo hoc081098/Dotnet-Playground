@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
 using WebAppPlayground;
 using WebAppPlayground.RabbitMq.Basic;
+using WebAppPlayground.RabbitMq.TopicWithDlx;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +21,22 @@ builder.Services.AddDbContext<JsonOwnedContext>((optionsBuilder) =>
 });
 
 // Add RabbitMQ background services
-builder.Services.AddHostedService<DemoRabbitMqPublisherBackgroundService>();
-builder.Services.AddHostedService<DemoRabbitMqConsumerBackgroundService>();
+var demoRabbitMq = DemoRabbitMq.TopicWithDlx;
+
+// ReSharper disable once UnreachableSwitchCaseDueToIntegerAnalysis
+switch (demoRabbitMq)
+{
+    case DemoRabbitMq.Basic:
+        builder.Services.AddHostedService<DemoRabbitMqPublisherBackgroundService>();
+        builder.Services.AddHostedService<DemoRabbitMqConsumerBackgroundService>();
+        break;
+    case DemoRabbitMq.TopicWithDlx:
+        builder.Services.AddHostedService<TopicWithDlxRabbitMqConsumerBackgroundService>();
+        builder.Services.AddHostedService<TopicWithDlxRabbitMqPublisherBackgroundService>();
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
 
 builder.Services.AddAntiforgery(options =>
 {
@@ -57,3 +72,9 @@ app.MapDemoRestApiParamsEndPoints1();
 app.MapDemoRestApiParamsEndPoints2();
 
 app.Run();
+
+enum DemoRabbitMq
+{
+    Basic,
+    TopicWithDlx
+}
