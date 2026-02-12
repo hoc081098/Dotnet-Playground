@@ -29,7 +29,8 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         // https://www.rabbitmq.com/docs/dlx#overview
         var arguments = new Dictionary<string, object?>
         {
-            { "x-dead-letter-exchange", TopicWithDlxConfig.MyDeadletterExchange }
+            { "x-dead-letter-exchange", TopicWithDlxConfig.MyDeadletterExchange },
+            { "x-dead-letter-routing-key", "" },
         };
 
         await channel.QueueDeclareAsync(
@@ -61,7 +62,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         // 5. Start consuming messages from the queue
         // this consumer tag identifies the subscription when it has to be cancelled
         var consumerTag = await channel.BasicConsumeAsync(
-            queue: "orders",
+            queue: TopicWithDlxConfig.QueueName,
             // false <=> manual acknowledgements.
             // We only acknowledge messages when processed successfully.
             // If processing fails, we could use `BasicNack` to requeue or route to a dead-letter queue
