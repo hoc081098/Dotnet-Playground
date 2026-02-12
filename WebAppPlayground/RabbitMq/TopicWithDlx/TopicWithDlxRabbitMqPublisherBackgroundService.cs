@@ -20,6 +20,8 @@ public class TopicWithDlxRabbitMqPublisherBackgroundService : BackgroundService
             durable: true, // durable exchange
             autoDelete: false, // don’t delete when the last consumer disconnects
             cancellationToken: stoppingToken);
+        
+        Console.WriteLine($"[>>>] Exchange declared: {TopicWithDlxConfig.ExchangeName}");
 
         // 2. Publish messages to the exchange
         for (var i = 0; i < 10; i++)

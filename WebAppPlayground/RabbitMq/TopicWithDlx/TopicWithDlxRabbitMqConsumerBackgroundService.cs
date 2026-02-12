@@ -25,6 +25,8 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
             autoDelete: false, // don’t delete when the last consumer disconnects
             cancellationToken: stoppingToken);
 
+        Console.WriteLine($"[<<<] Exchange declared: {TopicWithDlxConfig.ExchangeName}");
+
         // 2. Declare the queue and bind it.
         // https://www.rabbitmq.com/docs/dlx#overview
         var arguments = new Dictionary<string, object?>
@@ -46,6 +48,8 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
             exchange: TopicWithDlxConfig.ExchangeName,
             routingKey: TopicWithDlxConfig.Binding,
             cancellationToken: stoppingToken);
+
+        Console.WriteLine($"[<<<] Queue declared and bound: {TopicWithDlxConfig.QueueName}");
 
         // 3. Set prefetch count to 1 to process one message at a time
         await channel.BasicQosAsync(
