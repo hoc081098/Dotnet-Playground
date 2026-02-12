@@ -24,10 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DemoTopicWithDLX\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\WebAppShared\WebAppShared.csproj" />
     </ItemGroup>
 
