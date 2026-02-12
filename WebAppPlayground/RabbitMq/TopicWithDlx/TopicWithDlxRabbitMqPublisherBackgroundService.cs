@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
 using WebAppShared.RabbitMq.Shared;
@@ -30,7 +31,7 @@ public class TopicWithDlxRabbitMqPublisherBackgroundService : BackgroundService
             {
                 0 => PublishOrderPlacedAsync(channel, i, stoppingToken),
                 1 => PublishOtherMessageAsync(channel, i, stoppingToken),
-                _ => PublishPoisonOrderPlacedAsync(channel, i, stoppingToken),
+                _ => PublishPoisonOrderPlacedAsync(channel, stoppingToken),
             };
             await task;
             await Task.Delay(10_000, stoppingToken);
@@ -96,12 +97,10 @@ public class TopicWithDlxRabbitMqPublisherBackgroundService : BackgroundService
 
     private static async Task PublishPoisonOrderPlacedAsync(
         IChannel channel,
-        int i,
         CancellationToken stoppingToken)
     {
-        var invalidOrderPlacedJson =
-            $$"""{"orderId":"not-a-guid", "totalAmount":"NaN", "createdAtUtc":"invalid-{{i}}"}""";
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(invalidOrderPlacedJson);
+        const string invalidOrderPlacedJson = "123-invalid-json"; // Invalid JSON to simulate a poison message
+        var bytes = Encoding.UTF8.GetBytes(invalidOrderPlacedJson);
 
         const string routingKey = "orders.placed";
         await channel.BasicPublishAsync(
