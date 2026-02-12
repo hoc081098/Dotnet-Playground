@@ -31,7 +31,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         // https://www.rabbitmq.com/docs/dlx#overview
         var arguments = new Dictionary<string, object?>
         {
-            { "x-dead-letter-exchange", TopicWithDlxConfig.MyDeadletterExchange },
+            { "x-dead-letter-exchange", TopicWithDlxConfig.DeadletterExchange },
             { "x-dead-letter-routing-key", "" },
         };
 
