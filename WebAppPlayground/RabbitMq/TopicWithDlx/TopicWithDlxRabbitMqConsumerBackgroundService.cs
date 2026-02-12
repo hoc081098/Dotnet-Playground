@@ -14,7 +14,7 @@ public class TopicWithDlxRabbitMqConsumerBackgroundService : BackgroundService
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         // 0. Setup dead-letter exchange and queue
-        await channel.SetupForDlxAsync();
+        await channel.SetupForDlxAsync(cancellationToken: stoppingToken);
 
         // 1. Declare a topic exchange.
         // This ensures that the exchange exists (creates it if not already existing).
