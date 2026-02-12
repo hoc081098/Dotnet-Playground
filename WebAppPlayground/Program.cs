@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.EntityFrameworkCore;
 using WebAppPlayground.Data;
 using WebAppPlayground;
-using WebAppPlayground.BasicRabbitMq;
+using WebAppPlayground.RabbitMq.Basic;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,8 @@
 using System.Text.Json;
 using RabbitMQ.Client;
+using WebAppShared.RabbitMq.Shared;
 
-namespace WebAppPlayground.BasicRabbitMq;
+namespace WebAppPlayground.RabbitMq.Basic;
 
 public class DemoRabbitMqPublisherBackgroundService : BackgroundService
 {

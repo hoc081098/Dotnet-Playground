@@ -11,4 +11,5 @@
   <Project Path="CsharpPlayground/CsharpPlayground.csproj" />
   <Project Path="FsharpPlayground/FsharpPlayground.fsproj" />
   <Project Path="WebAppPlayground/WebAppPlayground.csproj" />
+  <Project Path="WebAppShared/WebAppShared.csproj" />
 </Solution>

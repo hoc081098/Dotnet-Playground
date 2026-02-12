@@ -1,8 +1,9 @@
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using WebAppShared.RabbitMq.Shared;
 
-namespace WebAppPlayground.BasicRabbitMq;
+namespace WebAppPlayground.RabbitMq.Basic;
 
 public class DemoRabbitMqConsumerBackgroundService : BackgroundService
 {
@@ -64,7 +65,9 @@ public class DemoRabbitMqConsumerBackgroundService : BackgroundService
             // 3.1. Copy the body to a new array to make it safe to use outside this event,
             // and then parse it to an OrderPlaced instance
             var body = eventArgs.Body.ToArray(); // bodyCopy is now safe to use elsewhere
-            var orderPlaced = JsonSerializer.Deserialize<OrderPlaced>(body)!;
+            var orderPlaced = (OrderPlaced)JsonSerializer.Deserialize(
+                body,
+                OrderPlacedReferences.GetOrderPlacedType())!;
 
             Console.WriteLine($"[<<<] Received OrderPlaced: {orderPlaced}");
             await Task.Delay(5_000, cancellationToken); // Simulate processing time
