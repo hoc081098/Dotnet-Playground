@@ -26,6 +26,9 @@ A personal learning playground for exploring **C#**, **F#**, and **.NET** featur
 └── WebAppShared/              # Shared models and utilities for WebAppPlayground
 ```
 
+- The `global.json` file in .NET is used to define which .NET SDK version a project or solution should use when executing **.NET CLI commands** like `dotnet build` or `dotnet run`. It helps ensure a consistent build environment across different development machines and Continuous Integration (CI) systems.
+  - SDK vs. Runtime: The `global.json` file controls the **SDK version** (the tooling and compiler), **not the target runtime version** of the application itself. You can use a newer SDK to build applications that target an older runtime.
+
 ## 🛠️ Technologies
 
 - **.NET 10** (Preview)
