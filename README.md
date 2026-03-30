@@ -21,7 +21,9 @@ A personal learning playground for exploring **C#**, **F#**, and **.NET** featur
 │
 ├── FsharpPlayground/          # F# playground - exploring FP concepts
 │
-└── WebAppPlayground/          # ASP.NET Core minimal API with EF Core
+├── WebAppPlayground/          # ASP.NET Core minimal API with EF Core and RabbitMQ
+│
+└── WebAppShared/              # Shared models and utilities for WebAppPlayground
 ```
 
 ## 🛠️ Technologies
@@ -30,6 +32,7 @@ A personal learning playground for exploring **C#**, **F#**, and **.NET** featur
 - **C# 14** / **F# 10**
 - **ASP.NET Core** - Minimal APIs
 - **Entity Framework Core** - PostgreSQL with JSON column support
+- **RabbitMQ** - Message queuing with Topics and Dead Letter Exchanges
 - **xUnit** - Unit testing
 - **SonarAnalyzer** - Code quality analysis
 
@@ -38,7 +41,7 @@ A personal learning playground for exploring **C#**, **F#**, and **.NET** featur
 ### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- [Docker](https://www.docker.com/) (for PostgreSQL database)
+- [Docker](https://www.docker.com/) (for PostgreSQL database and RabbitMQ)
 
 ### Run the projects
 
@@ -52,7 +55,7 @@ dotnet run --project CsharpPlayground
 # Run F# playground
 dotnet run --project FsharpPlayground
 
-# Run Web API (requires PostgreSQL)
+# Run Web API (requires PostgreSQL and RabbitMQ)
 docker compose up -d
 dotnet run --project WebAppPlayground
 ```
@@ -75,12 +78,17 @@ dotnet test
 
 ### F# Features
 - **Async Computation Expressions** - `async { }`, `let!`, `Async.Parallel`
+- **Result Computation Expressions** - `result { }`, `let!` with `FsToolkit.ErrorHandling`
 - **Pipe Operator** - `|>` for data flow
 - **Pattern Matching** - Discriminated unions, active patterns
+- **Lazy Evaluation** - `lazy` keyword, deferred computation
+- **Struct Types** - `[<Struct>]` attribute for value-type records
 
 ### ASP.NET Core
 - **Minimal APIs** - Lightweight HTTP endpoints
 - **EF Core** - JSON columns, migrations, PostgreSQL
+- **RabbitMQ** - Basic messaging, Topic exchanges, Dead Letter Exchanges (DLX)
+- **Antiforgery** - CSRF protection with XSRF tokens
 
 ## 📚 Documentation
 
