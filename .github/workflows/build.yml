@@ -10,7 +10,7 @@ on:
     branches: [ "master" ]
 
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '11.0.100-preview.2.26159.112'
 
 jobs:
   build-and-test:
