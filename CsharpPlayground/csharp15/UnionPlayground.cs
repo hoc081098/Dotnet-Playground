@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace CsharpPlayground;
+namespace CsharpPlayground.csharp15;
 
 public static class UnionPlayground
 {
