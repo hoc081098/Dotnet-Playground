@@ -14,6 +14,8 @@ public static class PersonExtensions
                 propName,
                 "Unknown property"),
         };
+
+        public string this[int index] => $"Demo {index}";
     }
 }
 
@@ -24,5 +26,6 @@ public class ExtensionIndexers
         var person = new Person("Alice", 30);
         Console.WriteLine($"Name: {person[nameof(Person.Name)]}");
         Console.WriteLine($"Age: {person[nameof(Person.Age)]}");
+        Console.WriteLine($"Demo: {person[0]}");
     }
 }
