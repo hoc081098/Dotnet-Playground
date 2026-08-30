@@ -8,6 +8,16 @@ public static class UnionPlayground
 
     public union Result<T>(T, Error);
 
+    [Union]
+    public class Result2<T>
+    {
+        public Result2(T value) => Value = value;
+
+        public Result2(Error error) => Value = error;
+
+        public object? Value { get; init; }
+    }
+
     public static void Run()
     {
         Result<int> successResult = 42;
@@ -18,27 +28,28 @@ public static class UnionPlayground
             int value => $"Success: {value}",
             Error error => $"Error: {error}"
         });
-        
+
         Console.WriteLine(errorResult switch
         {
             int value => $"Success: {value}",
             Error error => $"Error: {error}"
         });
-    }
 
-    // [Union]
-    // public class Result<T>
-    // {
-    //     public Result(T value)
-    //     {
-    //         Value = value;
-    //     }
-    //
-    //     public Result(Error error)
-    //     {
-    //         Value = error;
-    //     }
-    //
-    //     public object? Value { get; init; }
-    // }
+        Console.WriteLine("---");
+
+        Result2<int> successResult2 = 42;
+        Result2<int> errorResult2 = new Error("User.NotFound", "Not Found");
+
+        Console.WriteLine(successResult2 switch
+        {
+            int value => $"Success: {value}",
+            Error error => $"Error: {error}"
+        });
+
+        Console.WriteLine(errorResult2 switch
+        {
+            int value => $"Success: {value}",
+            Error error => $"Error: {error}"
+        });
+    }
 }
