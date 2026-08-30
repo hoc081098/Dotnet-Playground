@@ -22,6 +22,7 @@ public class ExtensionIndexers
     public static void Run()
     {
         var person = new Person("Alice", 30);
-        Console.WriteLine($"Name: {person["Name"]}, Age: {person["Age"]}");
+        Console.WriteLine($"Name: {person[nameof(Person.Name)]}");
+        Console.WriteLine($"Age: {person[nameof(Person.Age)]}");
     }
 }
