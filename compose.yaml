@@ -13,7 +13,7 @@
       - postgres_web_app_playground_db:/var/lib/postgresql
 
   web-app-playground-queue:
-    image: rabbitmq:4.2.3-management
+    image: rabbitmq:4.3.5-management
     container_name: web-app-playground-queue
     restart: unless-stopped
     ports:
